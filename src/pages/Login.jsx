@@ -31,7 +31,7 @@ export default function Login() {
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #0D0720 0%, #1B0A3A 40%, #2D1060 100%)", backgroundImage: "url(https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1600&auto=format&fit=crop&q=80)", backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "overlay" }}
+      style={{ background: "linear-gradient(135deg, #0D0720 0%, #1B0A3A 40%, #2D1060 100%)" }}
     >
       {/* Efeitos de luz de fundo */}
       <div className="absolute inset-0 pointer-events-none">
@@ -73,7 +73,6 @@ export default function Login() {
             <p className="text-xs tracking-[0.25em] text-violet-300 font-semibold mb-1">IGREJA</p>
             <p className="text-5xl font-bold italic" style={{ fontFamily: "Georgia, serif" }}>noah</p>
             <div className="w-10 h-0.5 bg-violet-500 mt-2" />
-            <p className="text-xs tracking-[0.3em] text-violet-400 font-bold mt-1">CURITIBA</p>
           </div>
 
           {/* Headline */}
