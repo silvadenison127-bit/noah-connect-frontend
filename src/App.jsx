@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Membros from "./pages/Membros";
 import Eventos from "./pages/Eventos";
 import Oracao from "./pages/Oracao";
+import Cultos from "./pages/Cultos";
 import EmBreve from "./pages/EmBreve";
 
 export default function App() {
@@ -16,7 +17,6 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-
           <Route
             element={
               <RotaProtegida>
@@ -29,7 +29,7 @@ export default function App() {
             <Route path="/agenda" element={<Eventos />} />
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/oracao" element={<Oracao />} />
-            <Route path="/cultos" element={<EmBreve titulo="Cultos" />} />
+            <Route path="/cultos" element={<Cultos />} />
             <Route path="/celulas" element={<EmBreve titulo="Células" />} />
             <Route path="/dizimos" element={<EmBreve titulo="Dízimos e Ofertas" />} />
             <Route path="/financeiro" element={<EmBreve titulo="Financeiro" />} />
