@@ -10,6 +10,7 @@ import Eventos from "./pages/Eventos";
 import Oracao from "./pages/Oracao";
 import Cultos from "./pages/Cultos";
 import Celulas from "./pages/Celulas";
+import Dizimos from "./pages/Dizimos";
 import EmBreve from "./pages/EmBreve";
 
 export default function App() {
@@ -32,7 +33,7 @@ export default function App() {
             <Route path="/oracao" element={<Oracao />} />
             <Route path="/cultos" element={<Cultos />} />
             <Route path="/celulas" element={<Celulas />} />
-            <Route path="/dizimos" element={<EmBreve titulo="Dízimos e Ofertas" />} />
+            <Route path="/dizimos" element={<Dizimos />} />
             <Route path="/financeiro" element={<EmBreve titulo="Financeiro" />} />
             <Route path="/ministerios" element={<EmBreve titulo="Ministérios" />} />
             <Route path="/noticias" element={<EmBreve titulo="Notícias" />} />
