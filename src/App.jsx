@@ -12,6 +12,7 @@ import Cultos from "./pages/Cultos";
 import Celulas from "./pages/Celulas";
 import Dizimos from "./pages/Dizimos";
 import Financeiro from "./pages/Financeiro";
+import Ministerios from "./pages/Ministerios";
 import EmBreve from "./pages/EmBreve";
 
 export default function App() {
@@ -36,7 +37,7 @@ export default function App() {
             <Route path="/celulas" element={<Celulas />} />
             <Route path="/dizimos" element={<Dizimos />} />
             <Route path="/financeiro" element={<Financeiro />} />
-            <Route path="/ministerios" element={<EmBreve titulo="Ministérios" />} />
+            <Route path="/ministerios" element={<Ministerios />} />
             <Route path="/noticias" element={<EmBreve titulo="Notícias" />} />
             <Route path="/comunicacoes" element={<EmBreve titulo="Comunicações" />} />
             <Route path="/relatorios" element={<EmBreve titulo="Relatórios" />} />
