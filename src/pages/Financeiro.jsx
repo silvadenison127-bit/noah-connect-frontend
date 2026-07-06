@@ -88,10 +88,6 @@ export default function Financeiro() {
     return CATEGORIAS.find((c) => c.valor === cat)?.label || cat;
   }
 
-  const maiorCategoria = resumo?.por_categoria?.[0]?.total
-    ? Math.max(...resumo.por_categoria.map((c) => parseFloat(c.total)))
-    : 0;
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -122,3 +118,156 @@ export default function Financeiro() {
             {resumo ? formatarMoeda(resumo.saidas) : "..."}
           </p>
         </div>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
+            <Wallet size={16} className="text-violet-500" /> Saldo este mês
+          </div>
+          <p className="text-xl font-bold text-violet-600">
+            {resumo ? formatarMoeda(resumo.saldo) : "..."}
+          </p>
+        </div>
+      </div>
+
+      {/* Formulário de nova despesa */}
+      {mostrarForm && (
+        <form onSubmit={salvar} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <select
+            value={nova.categoria}
+            onChange={(e) => setNova({ ...nova, categoria: e.target.value })}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+          >
+            {CATEGORIAS.map((c) => (
+              <option key={c.valor} value={c.valor}>{c.label}</option>
+            ))}
+          </select>
+
+          <input
+            required
+            type="number"
+            step="0.01"
+            min="0.01"
+            placeholder="Valor (R$)"
+            value={nova.valor}
+            onChange={(e) => setNova({ ...nova, valor: e.target.value })}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+          />
+
+          <select
+            value={nova.forma_pagamento}
+            onChange={(e) => setNova({ ...nova, forma_pagamento: e.target.value })}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+          >
+            <option value="dinheiro">Dinheiro</option>
+            <option value="pix">Pix</option>
+            <option value="cartao">Cartão</option>
+            <option value="transferencia">Transferência</option>
+            <option value="boleto">Boleto</option>
+          </select>
+
+          <input
+            type="date"
+            value={nova.data_lancamento}
+            onChange={(e) => setNova({ ...nova, data_lancamento: e.target.value })}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+          />
+
+          <input
+            placeholder="Descrição (opcional)"
+            value={nova.descricao}
+            onChange={(e) => setNova({ ...nova, descricao: e.target.value })}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+          />
+
+          <button
+            disabled={salvando}
+            className="sm:col-span-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+          >
+            {salvando ? "Salvando..." : "Salvar Despesa"}
+          </button>
+        </form>
+      )}
+
+      {/* Resumo por categoria */}
+      {resumo?.por_categoria?.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <h3 className="font-semibold text-slate-800 mb-3">Despesas por Categoria (este mês)</h3>
+          <div className="space-y-2">
+            {resumo.por_categoria.map((c, i) => {
+              const percentual = resumo.saidas > 0 ? (parseFloat(c.total) / resumo.saidas) * 100 : 0;
+              return (
+                <div key={c.categoria}>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-slate-600">{labelCategoria(c.categoria)}</span>
+                    <span className="font-medium text-slate-700">{formatarMoeda(c.total)}</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${percentual}%`, background: CORES_CATEGORIA[i % CORES_CATEGORIA.length] }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Histórico completo (entradas + saídas) */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-slate-100">
+          <h3 className="font-semibold text-slate-800">Histórico Completo</h3>
+        </div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-slate-400 border-b border-slate-100">
+              <th className="px-5 py-3 font-medium">Data</th>
+              <th className="px-5 py-3 font-medium">Descrição</th>
+              <th className="px-5 py-3 font-medium">Categoria</th>
+              <th className="px-5 py-3 font-medium">Movimento</th>
+              <th className="px-5 py-3 font-medium">Valor</th>
+              <th className="px-5 py-3 font-medium"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {carregando ? (
+              <tr><td className="px-5 py-4 text-slate-400" colSpan={6}>Carregando...</td></tr>
+            ) : historico.length === 0 ? (
+              <tr><td className="px-5 py-4 text-slate-400" colSpan={6}>Nenhum lançamento registrado ainda.</td></tr>
+            ) : (
+              historico.map((h) => (
+                <tr key={`${h.movimento}-${h.id}`} className="border-b border-slate-50 last:border-0">
+                  <td className="px-5 py-3 text-slate-500">
+                    {new Date(h.data_lancamento).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+                  </td>
+                  <td className="px-5 py-3 text-slate-700">
+                    {h.descricao || (h.movimento === "entrada" ? (h.membro_nome || "Anônimo") : "-")}
+                  </td>
+                  <td className="px-5 py-3 text-slate-500 capitalize">{labelCategoria(h.categoria)}</td>
+                  <td className="px-5 py-3">
+                    <span className={`text-xs px-2 py-1 rounded-full ${h.movimento === "entrada" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+                      {h.movimento === "entrada" ? "Entrada" : "Saída"}
+                    </span>
+                  </td>
+                  <td className={`px-5 py-3 font-semibold ${h.movimento === "entrada" ? "text-emerald-600" : "text-rose-600"}`}>
+                    {h.movimento === "entrada" ? "+" : "-"} {formatarMoeda(h.valor)}
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    {h.movimento === "saida" && (
+                      <button
+                        onClick={() => remover(h.id, h.movimento)}
+                        className="p-1.5 rounded-lg hover:bg-rose-50 text-rose-500"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
