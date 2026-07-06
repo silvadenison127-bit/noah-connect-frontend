@@ -124,6 +124,12 @@ export default function Dashboard() {
       ]
     : [{ nome: "Nenhuma célula cadastrada", valor: 1 }];
 
+  const financeiro = stats?.financeiro ?? { entradas: 0, saidas: 0, saldo: 0 };
+
+  function formatarMoeda(valor) {
+    return Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+
   return (
     <>
       {/* CABEÇALHO */}
@@ -289,22 +295,28 @@ export default function Dashboard() {
               <span className="flex items-center gap-2 text-sm text-slate-600">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />Entradas
               </span>
-              <span className="text-sm font-semibold text-slate-700">R$ 0,00</span>
+              <span className="text-sm font-semibold text-slate-700">
+                {carregando ? "..." : formatarMoeda(financeiro.entradas)}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm text-slate-600">
                 <span className="w-2 h-2 rounded-full bg-rose-500" />Saídas
               </span>
-              <span className="text-sm font-semibold text-slate-700">R$ 0,00</span>
+              <span className="text-sm font-semibold text-slate-700">
+                {carregando ? "..." : formatarMoeda(financeiro.saidas)}
+              </span>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-slate-100">
               <span className="flex items-center gap-2 text-sm text-slate-600">
                 <span className="w-2 h-2 rounded-full bg-violet-600" />Saldo
               </span>
-              <span className="text-sm font-bold text-violet-600">R$ 0,00</span>
+              <span className="text-sm font-bold text-violet-600">
+                {carregando ? "..." : formatarMoeda(financeiro.saldo)}
+              </span>
             </div>
           </div>
-          <p className="text-xs text-slate-400 mt-4">Módulo financeiro em breve.</p>
+          <p className="text-xs text-slate-400 mt-4">Registro de saídas em breve.</p>
         </div>
 
         {/* Donut Membros por Célula */}
