@@ -56,4 +56,175 @@ export default function Layout({ titulo = "Dashboard" }) {
   const navigate = useNavigate();
   const inputFotoRef = useRef(null);
 
-  const
+  const [menuRecolhido, setMenuRecolhido] = useState(false);
+  const [enviandoFoto, setEnviandoFoto] = useState(false);
+  const [erroFoto, setErroFoto] = useState(null);
+  const [naoLidos, setNaoLidos] = useState(0);
+
+  useEffect(() => {
+    function buscarNaoLidos() {
+      api.get("/comunicados/nao-lidos")
+        .then((res) => setNaoLidos(res.data.total))
+        .catch(() => {});
+    }
+    buscarNaoLidos();
+    const intervalo = setInterval(buscarNaoLidos, 30000); // atualiza a cada 30s
+    return () => clearInterval(intervalo);
+  }, []);
+
+  function aoSair() {
+    logout();
+    navigate("/login");
+  }
+
+  function abrirSeletorFoto() {
+    inputFotoRef.current?.click();
+  }
+
+  function aoEscolherFoto(e) {
+    const arquivo = e.target.files?.[0];
+    if (!arquivo) return;
+
+    if (arquivo.size > 2 * 1024 * 1024) {
+      setErroFoto("A imagem deve ter no máximo 2MB.");
+      return;
+    }
+
+    setErroFoto(null);
+    setEnviandoFoto(true);
+
+    const leitor = new FileReader();
+    leitor.onload = async () => {
+      const base64 = leitor.result;
+      try {
+        const { data } = await api.put("/membros/perfil", { foto_url: base64 });
+        atualizarUsuario({ foto_url: data.foto_url });
+      } catch (err) {
+        setErroFoto("Erro ao salvar a foto.");
+      } finally {
+        setEnviandoFoto(false);
+      }
+    };
+    leitor.readAsDataURL(arquivo);
+  }
+
+  return (
+    <div className="min-h-screen w-full flex bg-slate-50 text-slate-800">
+      <aside className={`${menuRecolhido ? "w-20" : "w-64"} shrink-0 bg-[#1B1033] text-white flex flex-col transition-all duration-200`}>
+        <div className="px-6 py-6 border-b border-white/10 overflow-hidden">
+          <p className="text-[11px] tracking-[0.2em] text-violet-300 font-semibold">IGREJA</p>
+          {!menuRecolhido && (
+            <p className="text-3xl font-bold italic -mt-1" style={{ fontFamily: "Georgia, serif" }}>noah</p>
+          )}
+        </div>
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+          {menuItens.map((item) => {
+            const Icone = item.icone;
+            return (
+              <NavLink
+                key={item.nome}
+                to={item.rota}
+                end={item.rota === "/"}
+                title={menuRecolhido ? item.nome : undefined}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                    isActive ? "bg-violet-600 text-white" : "text-violet-200/70 hover:bg-white/5 hover:text-white"
+                  }`
+                }
+              >
+                <div className="relative">
+                  <Icone size={18} />
+                  {item.rota === "/comunicacoes" && naoLidos > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
+                      {naoLidos > 9 ? "9+" : naoLidos}
+                    </span>
+                  )}
+                </div>
+                {!menuRecolhido && <span className="truncate">{item.nome}</span>}
+              </NavLink>
+            );
+          })}
+        </nav>
+        <div className="p-4 border-t border-white/10 space-y-1">
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-violet-200/70 hover:bg-white/5 hover:text-white">
+            <Headset size={18} />
+            {!menuRecolhido && <span>Suporte Online</span>}
+          </button>
+          <button
+            onClick={aoSair}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-violet-200/70 hover:bg-white/5 hover:text-white"
+          >
+            <LogOut size={18} />
+            {!menuRecolhido && <span>Sair</span>}
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMenuRecolhido((v) => !v)}
+              className="p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+            >
+              <Menu size={20} />
+            </button>
+            <h1 className="text-lg font-semibold text-slate-800">{titulo}</h1>
+          </div>
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                placeholder="Buscar por membro, evento, pedido..."
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-200"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/comunicacoes")}
+              className="relative p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+            >
+              <Bell size={20} />
+              {naoLidos > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5">
+                  {naoLidos > 9 ? "9+" : naoLidos}
+                </span>
+              )}
+            </button>
+            <div className="flex items-center gap-2">
+              <input
+                ref={inputFotoRef}
+                type="file"
+                accept="image/*"
+                onChange={aoEscolherFoto}
+                className="hidden"
+              />
+              <Avatar
+                nome={usuario?.nome}
+                fotoUrl={usuario?.foto_url}
+                onClick={abrirSeletorFoto}
+                carregando={enviandoFoto}
+              />
+              <div className="text-sm">
+                <p className="font-medium leading-tight">{usuario?.nome}</p>
+                <p className="text-xs text-slate-400 leading-tight capitalize">{usuario?.tipo}</p>
+              </div>
+              <ChevronDown size={16} className="text-slate-400" />
+            </div>
+          </div>
+        </header>
+
+        {erroFoto && (
+          <div className="px-6 pt-3">
+            <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 inline-block">{erroFoto}</p>
+          </div>
+        )}
+
+        <main className="p-6 space-y-6 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
