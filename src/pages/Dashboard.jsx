@@ -64,6 +64,7 @@ export default function Dashboard() {
   const [eventos, setEventos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
   const [membros, setMembros] = useState([]);
+  const [celulas, setCelulas] = useState([]);
   const [crescimento, setCrescimento] = useState(dadosCrescimento);
   const [carregando, setCarregando] = useState(true);
 
@@ -91,12 +92,14 @@ export default function Dashboard() {
         }
 
         if (usuario?.tipo === "admin") {
-          const [pedidosRes, membrosRes] = await Promise.all([
+          const [pedidosRes, membrosRes, celulasRes] = await Promise.all([
             api.get("/oracao").catch(() => ({ data: [] })),
             api.get("/membros").catch(() => ({ data: [] })),
+            api.get("/celulas").catch(() => ({ data: [] })),
           ]);
           setPedidos(pedidosRes.data.slice(0, 5));
           setMembros(membrosRes.data.slice(0, 4));
+          setCelulas(celulasRes.data);
         } else {
           const meusRes = await api.get("/oracao/meus").catch(() => ({ data: [] }));
           setPedidos(meusRes.data.slice(0, 5));
@@ -110,14 +113,16 @@ export default function Dashboard() {
 
   const totalMembros = stats?.membros_ativos ?? 0;
 
-  // Dados do donut de células (proporcional ao total real)
-  const dadosCelulas = totalMembros > 0 ? [
-    { nome: "Célula 1", valor: Math.round(totalMembros * 0.25) },
-    { nome: "Célula 2", valor: Math.round(totalMembros * 0.22) },
-    { nome: "Célula 3", valor: Math.round(totalMembros * 0.20) },
-    { nome: "Célula 4", valor: Math.round(totalMembros * 0.16) },
-    { nome: "Outras",   valor: Math.round(totalMembros * 0.17) },
-  ] : [{ nome: "Sem dados", valor: 1 }];
+  // Dados reais do donut de células (a partir das células cadastradas)
+  const totalEmCelulas = celulas.reduce((soma, c) => soma + parseInt(c.total_membros, 10), 0);
+  const semCelula = Math.max(totalMembros - totalEmCelulas, 0);
+
+  const dadosCelulas = celulas.length > 0
+    ? [
+        ...celulas.map((c) => ({ nome: c.nome, valor: parseInt(c.total_membros, 10) })),
+        ...(semCelula > 0 ? [{ nome: "Sem célula", valor: semCelula }] : []),
+      ]
+    : [{ nome: "Nenhuma célula cadastrada", valor: 1 }];
 
   return (
     <>
