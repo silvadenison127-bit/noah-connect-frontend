@@ -13,6 +13,7 @@ import Celulas from "./pages/Celulas";
 import Dizimos from "./pages/Dizimos";
 import Financeiro from "./pages/Financeiro";
 import Ministerios from "./pages/Ministerios";
+import Noticias from "./pages/Noticias";
 import EmBreve from "./pages/EmBreve";
 
 export default function App() {
@@ -38,7 +39,7 @@ export default function App() {
             <Route path="/dizimos" element={<Dizimos />} />
             <Route path="/financeiro" element={<Financeiro />} />
             <Route path="/ministerios" element={<Ministerios />} />
-            <Route path="/noticias" element={<EmBreve titulo="Notícias" />} />
+            <Route path="/noticias" element={<Noticias />} />
             <Route path="/comunicacoes" element={<EmBreve titulo="Comunicações" />} />
             <Route path="/relatorios" element={<EmBreve titulo="Relatórios" />} />
             <Route path="/configuracoes" element={<EmBreve titulo="Configurações" />} />
