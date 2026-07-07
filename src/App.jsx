@@ -1,41 +1,52 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const authRoutes = require('./routes/auth');
-const membrosRoutes = require('./routes/membros');
-const eventosRoutes = require('./routes/eventos');
-const oracaoRoutes = require('./routes/oracao');
-const dashboardRoutes = require('./routes/dashboard');
-const cultosRoutes = require('./routes/cultos');
-const celulasRoutes = require('./routes/celulas');
-const dizimosRoutes = require('./routes/dizimos');
-const financeiroRoutes = require('./routes/financeiro');
-const ministeriosRoutes = require('./routes/ministerios');
-const noticiasRoutes = require('./routes/noticias');
-const comunicadosRoutes = require('./routes/comunicados');
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import RotaProtegida from "./components/RotaProtegida";
+import Layout from "./components/Layout";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Membros from "./pages/Membros";
+import Eventos from "./pages/Eventos";
+import Oracao from "./pages/Oracao";
+import Cultos from "./pages/Cultos";
+import Celulas from "./pages/Celulas";
+import Dizimos from "./pages/Dizimos";
+import Financeiro from "./pages/Financeiro";
+import Ministerios from "./pages/Ministerios";
+import Noticias from "./pages/Noticias";
+import Comunicacoes from "./pages/Comunicacoes";
+import EmBreve from "./pages/EmBreve";
 
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: '5mb' }));
-
-app.get('/', (req, res) => {
-  res.json({ status: 'ok', servico: 'Noah Connect API' });
-});
-
-app.use('/api/auth', authRoutes);
-app.use('/api/membros', membrosRoutes);
-app.use('/api/eventos', eventosRoutes);
-app.use('/api/oracao', oracaoRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/cultos', cultosRoutes);
-app.use('/api/celulas', celulasRoutes);
-app.use('/api/dizimos', dizimosRoutes);
-app.use('/api/financeiro', financeiroRoutes);
-app.use('/api/ministerios', ministeriosRoutes);
-app.use('/api/noticias', noticiasRoutes);
-app.use('/api/comunicados', comunicadosRoutes);
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Noah Connect API rodando na porta ${PORT}`);
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            element={
+              <RotaProtegida>
+                <Layout />
+              </RotaProtegida>
+            }
+          >
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/membros" element={<Membros />} />
+            <Route path="/agenda" element={<Eventos />} />
+            <Route path="/eventos" element={<Eventos />} />
+            <Route path="/oracao" element={<Oracao />} />
+            <Route path="/cultos" element={<Cultos />} />
+            <Route path="/celulas" element={<Celulas />} />
+            <Route path="/dizimos" element={<Dizimos />} />
+            <Route path="/financeiro" element={<Financeiro />} />
+            <Route path="/ministerios" element={<Ministerios />} />
+            <Route path="/noticias" element={<Noticias />} />
+            <Route path="/comunicacoes" element={<Comunicacoes />} />
+            <Route path="/relatorios" element={<EmBreve titulo="Relatórios" />} />
+            <Route path="/configuracoes" element={<EmBreve titulo="Configurações" />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
