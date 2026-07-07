@@ -15,6 +15,7 @@ import Financeiro from "./pages/Financeiro";
 import Ministerios from "./pages/Ministerios";
 import Noticias from "./pages/Noticias";
 import Comunicacoes from "./pages/Comunicacoes";
+import Relatorios from "./pages/Relatorios";
 import EmBreve from "./pages/EmBreve";
 
 export default function App() {
@@ -42,7 +43,7 @@ export default function App() {
             <Route path="/ministerios" element={<Ministerios />} />
             <Route path="/noticias" element={<Noticias />} />
             <Route path="/comunicacoes" element={<Comunicacoes />} />
-            <Route path="/relatorios" element={<EmBreve titulo="Relatórios" />} />
+            <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<EmBreve titulo="Configurações" />} />
           </Route>
         </Routes>
