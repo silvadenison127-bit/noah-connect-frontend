@@ -16,7 +16,7 @@ import Ministerios from "./pages/Ministerios";
 import Noticias from "./pages/Noticias";
 import Comunicacoes from "./pages/Comunicacoes";
 import Relatorios from "./pages/Relatorios";
-import EmBreve from "./pages/EmBreve";
+import Configuracoes from "./pages/Configuracoes";
 
 export default function App() {
   return (
@@ -44,7 +44,7 @@ export default function App() {
             <Route path="/noticias" element={<Noticias />} />
             <Route path="/comunicacoes" element={<Comunicacoes />} />
             <Route path="/relatorios" element={<Relatorios />} />
-            <Route path="/configuracoes" element={<EmBreve titulo="Configurações" />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
           </Route>
         </Routes>
       </BrowserRouter>
