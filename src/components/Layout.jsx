@@ -25,6 +25,8 @@ const menuItens = [
   { icone: Settings, nome: "Configurações", rota: "/configuracoes" },
 ];
 
+const WHATSAPP_SUPORTE = "5541997604950";
+
 function Avatar({ nome, fotoUrl, tamanho = 36, onClick, carregando }) {
   const iniciais = nome?.split(" ").map((p) => p[0]).slice(0, 2).join("") || "?";
   return (
@@ -75,6 +77,13 @@ export default function Layout({ titulo = "Dashboard" }) {
   function aoSair() {
     logout();
     navigate("/login");
+  }
+
+  function abrirSuporte() {
+    const mensagem = encodeURIComponent(
+      `Olá! Sou ${usuario?.nome || "um usuário"} da plataforma Noah Connect e preciso de suporte.`
+    );
+    window.open(`https://wa.me/${WHATSAPP_SUPORTE}?text=${mensagem}`, "_blank");
   }
 
   function abrirSeletorFoto() {
@@ -146,7 +155,11 @@ export default function Layout({ titulo = "Dashboard" }) {
           })}
         </nav>
         <div className="p-4 border-t border-white/10 space-y-1">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-violet-200/70 hover:bg-white/5 hover:text-white">
+          <button
+            onClick={abrirSuporte}
+            title={menuRecolhido ? "Suporte Online" : undefined}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-violet-200/70 hover:bg-white/5 hover:text-white"
+          >
             <Headset size={18} />
             {!menuRecolhido && <span>Suporte Online</span>}
           </button>
