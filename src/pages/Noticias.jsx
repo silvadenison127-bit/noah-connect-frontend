@@ -83,11 +83,11 @@ export default function Noticias() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-slate-800 text-lg">Notícias</h2>
+        <h2 className="font-semibold text-white text-lg">Notícias</h2>
         {usuario?.tipo === "admin" && (
           <button
             onClick={abrirNovo}
-            className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl px-4 py-2"
+            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
           >
             <Plus size={16} /> Nova Notícia
           </button>
@@ -95,13 +95,13 @@ export default function Noticias() {
       </div>
 
       {mostrarForm && (
-        <form onSubmit={salvar} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-3">
+        <form onSubmit={salvar} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 space-y-3">
           <input
             required
             placeholder="Título da notícia"
             value={novo.titulo}
             onChange={(e) => setNovo({ ...novo, titulo: e.target.value })}
-            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <textarea
             required
@@ -109,7 +109,7 @@ export default function Noticias() {
             value={novo.conteudo}
             onChange={(e) => setNovo({ ...novo, conteudo: e.target.value })}
             rows={5}
-            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm resize-none"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 resize-none"
           />
 
           <div>
@@ -135,7 +135,7 @@ export default function Noticias() {
               <button
                 type="button"
                 onClick={() => inputImagemRef.current?.click()}
-                className="w-full h-24 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-violet-300 hover:text-violet-500"
+                className="w-full h-24 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center gap-1 text-slate-500 hover:border-violet-500/40 hover:text-violet-400"
               >
                 <ImageIcon size={20} />
                 <span className="text-xs">Adicionar imagem de capa (opcional)</span>
@@ -146,14 +146,14 @@ export default function Noticias() {
           <div className="flex gap-2">
             <button
               disabled={salvando}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+              className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
             >
               {salvando ? "Salvando..." : editandoId ? "Atualizar Notícia" : "Publicar Notícia"}
             </button>
             <button
               type="button"
               onClick={() => { setMostrarForm(false); setEditandoId(null); }}
-              className="px-4 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50"
+              className="px-4 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
             >
               Cancelar
             </button>
@@ -163,37 +163,37 @@ export default function Noticias() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {carregando ? (
-          <p className="text-sm text-slate-400 col-span-2">Carregando...</p>
+          <p className="text-sm text-slate-500 col-span-2">Carregando...</p>
         ) : noticias.length === 0 ? (
-          <div className="col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-10 text-center">
-            <Newspaper size={32} className="mx-auto text-slate-300 mb-2" />
-            <p className="text-sm text-slate-400">Nenhuma notícia publicada ainda.</p>
+          <div className="col-span-2 bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-10 text-center">
+            <Newspaper size={32} className="mx-auto text-slate-600 mb-2" />
+            <p className="text-sm text-slate-500">Nenhuma notícia publicada ainda.</p>
           </div>
         ) : (
           noticias.map((n) => (
-            <div key={n.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+            <div key={n.id} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm overflow-hidden flex flex-col">
               {n.imagem_capa && (
                 <img src={n.imagem_capa} alt={n.titulo} className="w-full h-40 object-cover" />
               )}
               <div className="p-4 flex flex-col flex-1">
-                <p className="text-xs text-slate-400 mb-1">
+                <p className="text-xs text-slate-500 mb-1">
                   {new Date(n.publicado_em).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
                   {n.autor_nome ? ` · ${n.autor_nome}` : ""}
                 </p>
-                <h3 className="font-semibold text-slate-800 mb-1">{n.titulo}</h3>
-                <p className="text-sm text-slate-600 line-clamp-3 flex-1">{n.conteudo}</p>
+                <h3 className="font-semibold text-white mb-1">{n.titulo}</h3>
+                <p className="text-sm text-slate-400 line-clamp-3 flex-1">{n.conteudo}</p>
 
                 {usuario?.tipo === "admin" && (
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-50">
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
                     <button
                       onClick={() => abrirEdicao(n)}
-                      className="text-xs text-slate-500 hover:text-violet-600 font-medium flex items-center gap-1"
+                      className="text-xs text-slate-400 hover:text-violet-400 font-medium flex items-center gap-1"
                     >
                       <Pencil size={12} /> Editar
                     </button>
                     <button
                       onClick={() => remover(n.id)}
-                      className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-1"
+                      className="text-xs text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1"
                     >
                       <Trash2 size={12} /> Remover
                     </button>
