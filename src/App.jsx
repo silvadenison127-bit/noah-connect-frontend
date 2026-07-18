@@ -17,6 +17,9 @@ import Noticias from "./pages/Noticias";
 import Comunicacoes from "./pages/Comunicacoes";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
+import IANoah from "./pages/IANoah";
+import ExecutiveBI from "./pages/ExecutiveBI";
+import MapaIgreja from "./pages/MapaIgreja";
 
 export default function App() {
   return (
@@ -32,6 +35,9 @@ export default function App() {
             }
           >
             <Route path="/" element={<Dashboard />} />
+            <Route path="/ia-noah" element={<IANoah />} />
+            <Route path="/executive-bi" element={<ExecutiveBI />} />
+            <Route path="/mapa" element={<MapaIgreja />} />
             <Route path="/membros" element={<Membros />} />
             <Route path="/agenda" element={<Eventos />} />
             <Route path="/eventos" element={<Eventos />} />
