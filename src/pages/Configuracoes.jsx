@@ -98,13 +98,13 @@ export default function Configuracoes() {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-semibold text-slate-800 text-lg">Configurações</h2>
+      <h2 className="font-semibold text-white text-lg">Configurações</h2>
 
       {/* Dados da Igreja */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Church size={18} className="text-violet-600" />
-          <h3 className="font-semibold text-slate-800">Dados da Igreja</h3>
+          <Church size={18} className="text-violet-400" />
+          <h3 className="font-semibold text-white">Dados da Igreja</h3>
         </div>
         <form onSubmit={salvarIgreja} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
@@ -112,21 +112,21 @@ export default function Configuracoes() {
             value={igreja.nome || ""}
             onChange={(e) => setIgreja({ ...igreja, nome: e.target.value })}
             disabled={usuario?.tipo !== "admin"}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2 disabled:bg-slate-50 disabled:text-slate-400"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2 disabled:bg-white/[0.02] disabled:text-slate-500"
           />
           <input
             placeholder="Endereço"
             value={igreja.endereco || ""}
             onChange={(e) => setIgreja({ ...igreja, endereco: e.target.value })}
             disabled={usuario?.tipo !== "admin"}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2 disabled:bg-slate-50 disabled:text-slate-400"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2 disabled:bg-white/[0.02] disabled:text-slate-500"
           />
           <input
             placeholder="Telefone"
             value={igreja.telefone || ""}
             onChange={(e) => setIgreja({ ...igreja, telefone: e.target.value })}
             disabled={usuario?.tipo !== "admin"}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 disabled:bg-white/[0.02] disabled:text-slate-500"
           />
           <input
             placeholder="Email de contato"
@@ -134,11 +134,11 @@ export default function Configuracoes() {
             value={igreja.email || ""}
             onChange={(e) => setIgreja({ ...igreja, email: e.target.value })}
             disabled={usuario?.tipo !== "admin"}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 disabled:bg-white/[0.02] disabled:text-slate-500"
           />
 
           {msgIgreja && (
-            <p className={`text-xs sm:col-span-2 px-3 py-2 rounded-lg ${msgIgreja.tipo === "sucesso" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+            <p className={`text-xs sm:col-span-2 px-3 py-2 rounded-lg ${msgIgreja.tipo === "sucesso" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"}`}>
               {msgIgreja.texto}
             </p>
           )}
@@ -146,7 +146,7 @@ export default function Configuracoes() {
           {usuario?.tipo === "admin" && (
             <button
               disabled={salvandoIgreja}
-              className="sm:col-span-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+              className="sm:col-span-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
             >
               {salvandoIgreja ? "Salvando..." : "Salvar Dados da Igreja"}
             </button>
@@ -155,10 +155,10 @@ export default function Configuracoes() {
       </div>
 
       {/* Trocar Senha */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Lock size={18} className="text-violet-600" />
-          <h3 className="font-semibold text-slate-800">Trocar Senha</h3>
+          <Lock size={18} className="text-violet-400" />
+          <h3 className="font-semibold text-white">Trocar Senha</h3>
         </div>
         <form onSubmit={trocarSenha} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
@@ -167,7 +167,7 @@ export default function Configuracoes() {
             placeholder="Senha atual"
             value={senhas.senha_atual}
             onChange={(e) => setSenhas({ ...senhas, senha_atual: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2"
           />
           <input
             required
@@ -175,7 +175,7 @@ export default function Configuracoes() {
             placeholder="Nova senha (mín. 6 caracteres)"
             value={senhas.senha_nova}
             onChange={(e) => setSenhas({ ...senhas, senha_nova: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <input
             required
@@ -183,18 +183,18 @@ export default function Configuracoes() {
             placeholder="Confirmar nova senha"
             value={senhas.confirmar}
             onChange={(e) => setSenhas({ ...senhas, confirmar: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
 
           {msgSenha && (
-            <p className={`text-xs sm:col-span-2 px-3 py-2 rounded-lg ${msgSenha.tipo === "sucesso" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+            <p className={`text-xs sm:col-span-2 px-3 py-2 rounded-lg ${msgSenha.tipo === "sucesso" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"}`}>
               {msgSenha.texto}
             </p>
           )}
 
           <button
             disabled={salvandoSenha}
-            className="sm:col-span-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+            className="sm:col-span-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
           >
             {salvandoSenha ? "Salvando..." : "Trocar Senha"}
           </button>
@@ -203,26 +203,26 @@ export default function Configuracoes() {
 
       {/* Gerenciar Admins (só para admin) */}
       {usuario?.tipo === "admin" && (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Shield size={18} className="text-violet-600" />
-            <h3 className="font-semibold text-slate-800">Administradores</h3>
+            <Shield size={18} className="text-violet-400" />
+            <h3 className="font-semibold text-white">Administradores</h3>
           </div>
 
           {carregandoAdmins ? (
-            <p className="text-sm text-slate-400">Carregando...</p>
+            <p className="text-sm text-slate-500">Carregando...</p>
           ) : (
             <div className="space-y-1 mb-4">
               {admins.map((a) => (
-                <div key={a.id} className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50">
+                <div key={a.id} className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-700 truncate">{a.nome}</p>
-                    <p className="text-xs text-slate-400 truncate">{a.email}</p>
+                    <p className="text-sm font-medium text-slate-100 truncate">{a.nome}</p>
+                    <p className="text-xs text-slate-500 truncate">{a.email}</p>
                   </div>
                   {a.id !== usuario.id && (
                     <button
                       onClick={() => rebaixar(a.id)}
-                      className="flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 font-medium shrink-0 ml-2"
+                      className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 font-medium shrink-0 ml-2"
                     >
                       <ArrowDown size={12} /> Remover admin
                     </button>
@@ -234,17 +234,17 @@ export default function Configuracoes() {
 
           {membrosNaoAdmin.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-slate-500 mb-2">Promover a admin:</p>
+              <p className="text-xs font-semibold text-slate-400 mb-2">Promover a admin:</p>
               <div className="space-y-1">
                 {membrosNaoAdmin.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50">
+                  <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/5">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{m.nome}</p>
-                      <p className="text-xs text-slate-400 truncate">{m.email}</p>
+                      <p className="text-sm font-medium text-slate-100 truncate">{m.nome}</p>
+                      <p className="text-xs text-slate-500 truncate">{m.email}</p>
                     </div>
                     <button
                       onClick={() => promover(m.id)}
-                      className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 font-medium shrink-0 ml-2"
+                      className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 font-medium shrink-0 ml-2"
                     >
                       <ArrowUp size={12} /> Promover
                     </button>
