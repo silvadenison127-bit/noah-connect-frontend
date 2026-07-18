@@ -98,11 +98,11 @@ export default function Cultos() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-slate-800 text-lg">Cultos</h2>
+        <h2 className="font-semibold text-white text-lg">Cultos</h2>
         {usuario?.tipo === "admin" && (
           <button
             onClick={abrirNovo}
-            className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl px-4 py-2"
+            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
           >
             <Plus size={16} /> Novo Culto
           </button>
@@ -110,45 +110,45 @@ export default function Cultos() {
       </div>
 
       {mostrarForm && (
-        <form onSubmit={salvar} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={salvar} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
             required
             placeholder="Título do culto"
             value={novo.titulo}
             onChange={(e) => setNovo({ ...novo, titulo: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2"
           />
           <input
             required
             type="datetime-local"
             value={novo.data_inicio}
             onChange={(e) => setNovo({ ...novo, data_inicio: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50 [color-scheme:dark]"
           />
           <input
             placeholder="Local"
             value={novo.local}
             onChange={(e) => setNovo({ ...novo, local: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <textarea
             placeholder="Descrição (opcional)"
             value={novo.descricao}
             onChange={(e) => setNovo({ ...novo, descricao: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2"
             rows={2}
           />
           <div className="sm:col-span-2 flex gap-2">
             <button
               disabled={salvando}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+              className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
             >
               {salvando ? "Salvando..." : editandoId ? "Atualizar Culto" : "Salvar Culto"}
             </button>
             <button
               type="button"
               onClick={() => { setMostrarForm(false); setEditandoId(null); }}
-              className="px-4 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50"
+              className="px-4 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
             >
               Cancelar
             </button>
@@ -156,23 +156,23 @@ export default function Cultos() {
         </form>
       )}
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm divide-y divide-slate-50">
+      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm divide-y divide-white/5">
         {carregando ? (
-          <p className="text-sm text-slate-400 p-5">Carregando...</p>
+          <p className="text-sm text-slate-500 p-5">Carregando...</p>
         ) : cultos.length === 0 ? (
-          <p className="text-sm text-slate-400 p-5">Nenhum culto cadastrado ainda.</p>
+          <p className="text-sm text-slate-500 p-5">Nenhum culto cadastrado ainda.</p>
         ) : (
           cultos.map((c) => {
             const data = new Date(c.data_inicio);
             return (
-              <div key={c.id} className="p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-violet-50 flex flex-col items-center justify-center text-violet-600 shrink-0">
+              <div key={c.id} className="p-4 flex items-center gap-4 hover:bg-white/[0.02]">
+                <div className="w-14 h-14 rounded-xl bg-violet-500/10 flex flex-col items-center justify-center text-violet-400 shrink-0">
                   <span className="text-base font-bold leading-none">{data.toLocaleDateString("pt-BR", { day: "2-digit" })}</span>
                   <span className="text-[10px] leading-none mt-1 uppercase">{data.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}</span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-800">{c.titulo}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-sm font-medium text-white">{c.titulo}</p>
+                  <p className="text-xs text-slate-500">
                     {data.toLocaleString("pt-BR", { weekday: "long", hour: "2-digit", minute: "2-digit" })}
                     {c.local ? ` · ${c.local}` : ""}
                   </p>
@@ -182,21 +182,21 @@ export default function Cultos() {
                     <button
                       onClick={() => abrirPresencas(c)}
                       title="Registrar presença"
-                      className="p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+                      className="p-2 rounded-lg hover:bg-white/5 text-slate-400"
                     >
                       <Users size={16} />
                     </button>
                     <button
                       onClick={() => abrirEdicao(c)}
                       title="Editar"
-                      className="p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+                      className="p-2 rounded-lg hover:bg-white/5 text-slate-400"
                     >
                       <Pencil size={16} />
                     </button>
                     <button
                       onClick={() => remover(c.id)}
                       title="Remover"
-                      className="p-2 rounded-lg hover:bg-rose-50 text-rose-500"
+                      className="p-2 rounded-lg hover:bg-rose-500/10 text-rose-400"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -209,34 +209,34 @@ export default function Cultos() {
       </div>
 
       {presencaCultoId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="font-semibold text-slate-800">Registrar Presença</h3>
-              <button onClick={() => setPresencaCultoId(null)} className="p-1 rounded-lg hover:bg-slate-50 text-slate-400">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0F0F1E] border border-white/10 rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <h3 className="font-semibold text-white">Registrar Presença</h3>
+              <button onClick={() => setPresencaCultoId(null)} className="p-1 rounded-lg hover:bg-white/5 text-slate-400">
                 <X size={18} />
               </button>
             </div>
             <div className="overflow-y-auto p-3 space-y-1">
               {carregandoPresencas ? (
-                <p className="text-sm text-slate-400 p-3">Carregando membros...</p>
+                <p className="text-sm text-slate-500 p-3">Carregando membros...</p>
               ) : presencas.length === 0 ? (
-                <p className="text-sm text-slate-400 p-3">Nenhum membro ativo encontrado.</p>
+                <p className="text-sm text-slate-500 p-3">Nenhum membro ativo encontrado.</p>
               ) : (
                 presencas.map((p) => (
                   <label
                     key={p.usuario_id}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       checked={p.presente}
                       onChange={() => alternarPresenca(p.usuario_id, p.presente)}
-                      className="w-4 h-4 rounded accent-violet-600"
+                      className="w-4 h-4 rounded accent-violet-500"
                     />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{p.nome}</p>
-                      <p className="text-xs text-slate-400 truncate">{p.email}</p>
+                      <p className="text-sm font-medium text-slate-100 truncate">{p.nome}</p>
+                      <p className="text-xs text-slate-500 truncate">{p.email}</p>
                     </div>
                   </label>
                 ))
