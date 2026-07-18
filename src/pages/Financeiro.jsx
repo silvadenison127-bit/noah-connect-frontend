@@ -91,10 +91,10 @@ export default function Financeiro() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-slate-800 text-lg">Financeiro</h2>
+        <h2 className="font-semibold text-white text-lg">Financeiro</h2>
         <button
           onClick={() => setMostrarForm((v) => !v)}
-          className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl px-4 py-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
         >
           <Plus size={16} /> Nova Despesa
         </button>
@@ -102,27 +102,27 @@ export default function Financeiro() {
 
       {/* Cards de resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
-            <TrendingUp size={16} className="text-emerald-500" /> Entradas este mês
+        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <TrendingUp size={16} className="text-emerald-400" /> Entradas este mês
           </div>
-          <p className="text-xl font-bold text-slate-800">
+          <p className="text-xl font-bold text-white">
             {resumo ? formatarMoeda(resumo.entradas) : "..."}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
-            <TrendingDown size={16} className="text-rose-500" /> Saídas este mês
+        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <TrendingDown size={16} className="text-rose-400" /> Saídas este mês
           </div>
-          <p className="text-xl font-bold text-slate-800">
+          <p className="text-xl font-bold text-white">
             {resumo ? formatarMoeda(resumo.saidas) : "..."}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
-            <Wallet size={16} className="text-violet-500" /> Saldo este mês
+        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <Wallet size={16} className="text-violet-400" /> Saldo este mês
           </div>
-          <p className="text-xl font-bold text-violet-600">
+          <p className="text-xl font-bold text-violet-400">
             {resumo ? formatarMoeda(resumo.saldo) : "..."}
           </p>
         </div>
@@ -130,14 +130,14 @@ export default function Financeiro() {
 
       {/* Formulário de nova despesa */}
       {mostrarForm && (
-        <form onSubmit={salvar} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={salvar} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <select
             value={nova.categoria}
             onChange={(e) => setNova({ ...nova, categoria: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
           >
             {CATEGORIAS.map((c) => (
-              <option key={c.valor} value={c.valor}>{c.label}</option>
+              <option key={c.valor} value={c.valor} className="bg-[#0F0F1E]">{c.label}</option>
             ))}
           </select>
 
@@ -149,38 +149,38 @@ export default function Financeiro() {
             placeholder="Valor (R$)"
             value={nova.valor}
             onChange={(e) => setNova({ ...nova, valor: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
 
           <select
             value={nova.forma_pagamento}
             onChange={(e) => setNova({ ...nova, forma_pagamento: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
           >
-            <option value="dinheiro">Dinheiro</option>
-            <option value="pix">Pix</option>
-            <option value="cartao">Cartão</option>
-            <option value="transferencia">Transferência</option>
-            <option value="boleto">Boleto</option>
+            <option value="dinheiro" className="bg-[#0F0F1E]">Dinheiro</option>
+            <option value="pix" className="bg-[#0F0F1E]">Pix</option>
+            <option value="cartao" className="bg-[#0F0F1E]">Cartão</option>
+            <option value="transferencia" className="bg-[#0F0F1E]">Transferência</option>
+            <option value="boleto" className="bg-[#0F0F1E]">Boleto</option>
           </select>
 
           <input
             type="date"
             value={nova.data_lancamento}
             onChange={(e) => setNova({ ...nova, data_lancamento: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50 [color-scheme:dark]"
           />
 
           <input
             placeholder="Descrição (opcional)"
             value={nova.descricao}
             onChange={(e) => setNova({ ...nova, descricao: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2"
           />
 
           <button
             disabled={salvando}
-            className="sm:col-span-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+            className="sm:col-span-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
           >
             {salvando ? "Salvando..." : "Salvar Despesa"}
           </button>
@@ -189,18 +189,18 @@ export default function Financeiro() {
 
       {/* Resumo por categoria */}
       {resumo?.por_categoria?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-          <h3 className="font-semibold text-slate-800 mb-3">Despesas por Categoria (este mês)</h3>
+        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+          <h3 className="font-semibold text-white mb-3">Despesas por Categoria (este mês)</h3>
           <div className="space-y-2">
             {resumo.por_categoria.map((c, i) => {
               const percentual = resumo.saidas > 0 ? (parseFloat(c.total) / resumo.saidas) * 100 : 0;
               return (
                 <div key={c.categoria}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-slate-600">{labelCategoria(c.categoria)}</span>
-                    <span className="font-medium text-slate-700">{formatarMoeda(c.total)}</span>
+                    <span className="text-slate-300">{labelCategoria(c.categoria)}</span>
+                    <span className="font-medium text-slate-100">{formatarMoeda(c.total)}</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${percentual}%`, background: CORES_CATEGORIA[i % CORES_CATEGORIA.length] }}
@@ -214,13 +214,13 @@ export default function Financeiro() {
       )}
 
       {/* Histórico completo (entradas + saídas) */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-slate-100">
-          <h3 className="font-semibold text-slate-800">Histórico Completo</h3>
+      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-white/10">
+          <h3 className="font-semibold text-white">Histórico Completo</h3>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-slate-400 border-b border-slate-100">
+            <tr className="text-left text-slate-400 border-b border-white/10">
               <th className="px-5 py-3 font-medium">Data</th>
               <th className="px-5 py-3 font-medium">Descrição</th>
               <th className="px-5 py-3 font-medium">Categoria</th>
@@ -231,32 +231,32 @@ export default function Financeiro() {
           </thead>
           <tbody>
             {carregando ? (
-              <tr><td className="px-5 py-4 text-slate-400" colSpan={6}>Carregando...</td></tr>
+              <tr><td className="px-5 py-4 text-slate-500" colSpan={6}>Carregando...</td></tr>
             ) : historico.length === 0 ? (
-              <tr><td className="px-5 py-4 text-slate-400" colSpan={6}>Nenhum lançamento registrado ainda.</td></tr>
+              <tr><td className="px-5 py-4 text-slate-500" colSpan={6}>Nenhum lançamento registrado ainda.</td></tr>
             ) : (
               historico.map((h) => (
-                <tr key={`${h.movimento}-${h.id}`} className="border-b border-slate-50 last:border-0">
-                  <td className="px-5 py-3 text-slate-500">
+                <tr key={`${h.movimento}-${h.id}`} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                  <td className="px-5 py-3 text-slate-400">
                     {new Date(h.data_lancamento).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
                   </td>
-                  <td className="px-5 py-3 text-slate-700">
+                  <td className="px-5 py-3 text-slate-200">
                     {h.descricao || (h.movimento === "entrada" ? (h.membro_nome || "Anônimo") : "-")}
                   </td>
-                  <td className="px-5 py-3 text-slate-500 capitalize">{labelCategoria(h.categoria)}</td>
+                  <td className="px-5 py-3 text-slate-400 capitalize">{labelCategoria(h.categoria)}</td>
                   <td className="px-5 py-3">
-                    <span className={`text-xs px-2 py-1 rounded-full ${h.movimento === "entrada" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${h.movimento === "entrada" ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>
                       {h.movimento === "entrada" ? "Entrada" : "Saída"}
                     </span>
                   </td>
-                  <td className={`px-5 py-3 font-semibold ${h.movimento === "entrada" ? "text-emerald-600" : "text-rose-600"}`}>
+                  <td className={`px-5 py-3 font-semibold ${h.movimento === "entrada" ? "text-emerald-400" : "text-rose-400"}`}>
                     {h.movimento === "entrada" ? "+" : "-"} {formatarMoeda(h.valor)}
                   </td>
                   <td className="px-5 py-3 text-right">
                     {h.movimento === "saida" && (
                       <button
                         onClick={() => remover(h.id, h.movimento)}
-                        className="p-1.5 rounded-lg hover:bg-rose-50 text-rose-500"
+                        className="p-1.5 rounded-lg hover:bg-rose-500/10 text-rose-400"
                       >
                         <Trash2 size={14} />
                       </button>
