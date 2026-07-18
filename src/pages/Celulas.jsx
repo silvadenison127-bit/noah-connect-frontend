@@ -115,11 +115,11 @@ export default function Celulas() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-slate-800 text-lg">Células</h2>
+        <h2 className="font-semibold text-white text-lg">Células</h2>
         {usuario?.tipo === "admin" && (
           <button
             onClick={abrirNovo}
-            className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl px-4 py-2"
+            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
           >
             <Plus size={16} /> Nova Célula
           </button>
@@ -127,57 +127,57 @@ export default function Celulas() {
       </div>
 
       {mostrarForm && (
-        <form onSubmit={salvar} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={salvar} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
             required
             placeholder="Nome da célula"
             value={novo.nome}
             onChange={(e) => setNovo({ ...novo, nome: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm sm:col-span-2"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2"
           />
           <select
             value={novo.lider_id}
             onChange={(e) => setNovo({ ...novo, lider_id: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
           >
-            <option value="">Selecionar líder (opcional)</option>
+            <option value="" className="bg-[#0F0F1E]">Selecionar líder (opcional)</option>
             {membros.map((m) => (
-              <option key={m.id} value={m.id}>{m.nome}</option>
+              <option key={m.id} value={m.id} className="bg-[#0F0F1E]">{m.nome}</option>
             ))}
           </select>
           <select
             value={novo.dia_semana}
             onChange={(e) => setNovo({ ...novo, dia_semana: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
           >
-            <option value="">Dia da semana</option>
+            <option value="" className="bg-[#0F0F1E]">Dia da semana</option>
             {diasSemana.map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d} className="bg-[#0F0F1E]">{d}</option>
             ))}
           </select>
           <input
             type="time"
             value={novo.horario}
             onChange={(e) => setNovo({ ...novo, horario: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50 [color-scheme:dark]"
           />
           <input
             placeholder="Endereço"
             value={novo.endereco}
             onChange={(e) => setNovo({ ...novo, endereco: e.target.value })}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <div className="sm:col-span-2 flex gap-2">
             <button
               disabled={salvando}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+              className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
             >
               {salvando ? "Salvando..." : editandoId ? "Atualizar Célula" : "Salvar Célula"}
             </button>
             <button
               type="button"
               onClick={() => { setMostrarForm(false); setEditandoId(null); }}
-              className="px-4 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50"
+              className="px-4 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
             >
               Cancelar
             </button>
@@ -185,27 +185,27 @@ export default function Celulas() {
         </form>
       )}
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm divide-y divide-slate-50">
+      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm divide-y divide-white/5">
         {carregando ? (
-          <p className="text-sm text-slate-400 p-5">Carregando...</p>
+          <p className="text-sm text-slate-500 p-5">Carregando...</p>
         ) : celulas.length === 0 ? (
-          <p className="text-sm text-slate-400 p-5">Nenhuma célula cadastrada ainda.</p>
+          <p className="text-sm text-slate-500 p-5">Nenhuma célula cadastrada ainda.</p>
         ) : (
           celulas.map((c) => (
-            <div key={c.id} className="p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600 shrink-0">
+            <div key={c.id} className="p-4 flex items-center gap-4 hover:bg-white/[0.02]">
+              <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
                 <Users size={20} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-800">{c.nome}</p>
-                <p className="text-xs text-slate-400">
+                <p className="text-sm font-medium text-white">{c.nome}</p>
+                <p className="text-xs text-slate-500">
                   {c.lider_nome ? `Líder: ${c.lider_nome}` : "Sem líder definido"}
                   {c.dia_semana ? ` · ${c.dia_semana}` : ""}
                   {c.horario ? ` às ${c.horario}` : ""}
                   {c.endereco ? ` · ${c.endereco}` : ""}
                 </p>
               </div>
-              <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full shrink-0">
+              <span className="text-xs bg-white/5 text-slate-400 px-2 py-1 rounded-full shrink-0">
                 {c.total_membros} {c.total_membros === "1" ? "membro" : "membros"}
               </span>
               {usuario?.tipo === "admin" && (
@@ -213,21 +213,21 @@ export default function Celulas() {
                   <button
                     onClick={() => abrirMembros(c)}
                     title="Gerenciar membros"
-                    className="p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+                    className="p-2 rounded-lg hover:bg-white/5 text-slate-400"
                   >
                     <Users size={16} />
                   </button>
                   <button
                     onClick={() => abrirEdicao(c)}
                     title="Editar"
-                    className="p-2 rounded-lg hover:bg-slate-50 text-slate-500"
+                    className="p-2 rounded-lg hover:bg-white/5 text-slate-400"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => remover(c.id)}
                     title="Remover"
-                    className="p-2 rounded-lg hover:bg-rose-50 text-rose-500"
+                    className="p-2 rounded-lg hover:bg-rose-500/10 text-rose-400"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -239,34 +239,34 @@ export default function Celulas() {
       </div>
 
       {celulaMembrosId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="font-semibold text-slate-800">Membros da Célula</h3>
-              <button onClick={() => setCelulaMembrosId(null)} className="p-1 rounded-lg hover:bg-slate-50 text-slate-400">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0F0F1E] border border-white/10 rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <h3 className="font-semibold text-white">Membros da Célula</h3>
+              <button onClick={() => setCelulaMembrosId(null)} className="p-1 rounded-lg hover:bg-white/5 text-slate-400">
                 <X size={18} />
               </button>
             </div>
             <div className="overflow-y-auto p-4 space-y-4">
               {carregandoMembros ? (
-                <p className="text-sm text-slate-400">Carregando...</p>
+                <p className="text-sm text-slate-500">Carregando...</p>
               ) : (
                 <>
                   <div>
-                    <p className="text-xs font-semibold text-slate-500 mb-2">Vinculados ({vinculados.length})</p>
+                    <p className="text-xs font-semibold text-slate-400 mb-2">Vinculados ({vinculados.length})</p>
                     {vinculados.length === 0 ? (
-                      <p className="text-xs text-slate-400">Nenhum membro vinculado ainda.</p>
+                      <p className="text-xs text-slate-500">Nenhum membro vinculado ainda.</p>
                     ) : (
                       <div className="space-y-1">
                         {vinculados.map((m) => (
-                          <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50">
+                          <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5">
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-slate-700 truncate">{m.nome}</p>
-                              <p className="text-xs text-slate-400 truncate">{m.email}</p>
+                              <p className="text-sm font-medium text-slate-100 truncate">{m.nome}</p>
+                              <p className="text-xs text-slate-500 truncate">{m.email}</p>
                             </div>
                             <button
                               onClick={() => desvincular(m.id)}
-                              className="text-xs text-rose-500 hover:text-rose-700 font-medium shrink-0 ml-2"
+                              className="text-xs text-rose-400 hover:text-rose-300 font-medium shrink-0 ml-2"
                             >
                               Remover
                             </button>
@@ -277,20 +277,20 @@ export default function Celulas() {
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-slate-500 mb-2">Disponíveis ({disponiveis.length})</p>
+                    <p className="text-xs font-semibold text-slate-400 mb-2">Disponíveis ({disponiveis.length})</p>
                     {disponiveis.length === 0 ? (
-                      <p className="text-xs text-slate-400">Nenhum membro disponível.</p>
+                      <p className="text-xs text-slate-500">Nenhum membro disponível.</p>
                     ) : (
                       <div className="space-y-1">
                         {disponiveis.map((m) => (
-                          <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50">
+                          <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/5">
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-slate-700 truncate">{m.nome}</p>
-                              <p className="text-xs text-slate-400 truncate">{m.email}</p>
+                              <p className="text-sm font-medium text-slate-100 truncate">{m.nome}</p>
+                              <p className="text-xs text-slate-500 truncate">{m.email}</p>
                             </div>
                             <button
                               onClick={() => vincular(m.id)}
-                              className="text-xs text-violet-600 hover:text-violet-800 font-medium shrink-0 ml-2"
+                              className="text-xs text-violet-400 hover:text-violet-300 font-medium shrink-0 ml-2"
                             >
                               Adicionar
                             </button>
