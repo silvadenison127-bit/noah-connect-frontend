@@ -1,30 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis,
   Tooltip, PieChart, Pie, Cell
 } from "recharts";
 import {
   Users, Calendar, HeartHandshake, CalendarDays,
-  HeartPulse, Brain, Activity, TrendingUp, Anchor, Wallet, ShieldCheck
+  HeartPulse, Brain, Activity, TrendingUp, Anchor, Wallet, ShieldCheck,
+  AlertTriangle, AlertCircle, Info, ArrowRight, Sparkles
 } from "lucide-react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-
-// Dados de exemplo para o gráfico de crescimento (serão substituídos por dados reais futuramente)
-const dadosCrescimento = [
-  { mes: "Jan", membros: 0 },
-  { mes: "Fev", membros: 0 },
-  { mes: "Mar", membros: 0 },
-  { mes: "Abr", membros: 0 },
-  { mes: "Mai", membros: 0 },
-  { mes: "Jun", membros: 0 },
-  { mes: "Jul", membros: 0 },
-  { mes: "Ago", membros: 0 },
-  { mes: "Set", membros: 0 },
-  { mes: "Out", membros: 0 },
-  { mes: "Nov", membros: 0 },
-  { mes: "Dez", membros: 0 },
-];
 
 const CORES_CELULA = ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#EDE9FE"];
 
@@ -40,7 +26,7 @@ function Avatar({ nome, tamanho = 32 }) {
   );
 }
 
-function CardEstatistica({ icone: Icone, label, valor, variacao, carregando }) {
+function CardEstatistica({ icone: Icone, label, valor, carregando }) {
   return (
     <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 flex flex-col gap-3 min-w-0">
       <div className="flex items-center gap-3">
@@ -49,19 +35,13 @@ function CardEstatistica({ icone: Icone, label, valor, variacao, carregando }) {
         </div>
         <p className="text-sm text-slate-400">{label}</p>
       </div>
-      <div>
-        <p className="text-2xl font-bold text-white tabular-nums">
-          {carregando ? "..." : valor}
-        </p>
-        {variacao && (
-          <p className="text-xs text-emerald-400 font-medium mt-0.5">{variacao}</p>
-        )}
-      </div>
+      <p className="text-2xl font-bold text-white tabular-nums">
+        {carregando ? "..." : valor}
+      </p>
     </div>
   );
 }
 
-// Cores por indicador (ícone + valor), seguindo o mockup
 const CORES_INDICADOR = {
   emerald: { icone: "text-emerald-400", bg: "bg-emerald-500/10", valor: "text-emerald-400" },
   violet: { icone: "text-violet-400", bg: "bg-violet-500/10", valor: "text-violet-400" },
@@ -93,6 +73,211 @@ const tooltipStyle = {
   itemStyle: { color: "#C4B5FD" },
 };
 
+// ---------- Saúde da Igreja detalhada (Fase 4.1) ----------
+
+const LABEL_CATEGORIA_SAUDE = {
+  frequenciaCultos: "Frequência em Cultos",
+  participacaoCelulas: "Participação em Células",
+  participacaoMinisterios: "Participação em Ministérios",
+  crescimento: "Crescimento de Membros",
+  retencao: "Retenção",
+  participacaoEventos: "Participação em Eventos",
+};
+
+function GaugeSaude({ percentual }) {
+  const valorExibido = percentual ?? 0;
+  const valorArco = Math.min(Math.max(valorExibido, 0), 100);
+  const raio = 42;
+  const circunferencia = 2 * Math.PI * raio;
+  const offset = circunferencia - (valorArco / 100) * circunferencia;
+
+  return (
+    <div className="relative w-28 h-28 shrink-0">
+      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+        <circle cx="50" cy="50" r={raio} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
+        <circle
+          cx="50" cy="50" r={raio} fill="none" stroke="#34D399" strokeWidth="8"
+          strokeDasharray={circunferencia} strokeDashoffset={offset} strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-lg font-bold text-white">{percentual !== null ? `${percentual}%` : "--"}</span>
+        <span className="text-[9px] text-slate-500">Saudável</span>
+      </div>
+    </div>
+  );
+}
+
+function CardSaudeIgreja({ saude, carregando }) {
+  const indicadores = saude?.indicadores ?? {};
+  const categorias = Object.keys(LABEL_CATEGORIA_SAUDE).filter((k) => indicadores[k]);
+
+  return (
+    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <h3 className="font-semibold text-white mb-1">Saúde da Igreja</h3>
+      <p className="text-xs text-slate-500 mb-4">Baseado em dados reais da plataforma</p>
+      {carregando ? (
+        <p className="text-sm text-slate-500">Carregando...</p>
+      ) : (
+        <div className="flex items-center gap-5">
+          <GaugeSaude percentual={saude?.score ?? null} />
+          <div className="flex-1 space-y-2 min-w-0">
+            {categorias.map((chave) => {
+              const item = indicadores[chave];
+              const valor = item?.percentual;
+              return (
+                <div key={chave}>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-slate-400 truncate">{LABEL_CATEGORIA_SAUDE[chave]}</span>
+                    <span className="text-slate-200 font-medium shrink-0 ml-2">
+                      {valor === null || valor === undefined ? "Sem dado" : `${valor}%`}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-violet-500 to-emerald-400 rounded-full"
+                      style={{ width: `${Math.min(Math.max(valor ?? 0, 0), 100)}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {indicadores.pedidosOracaoAtivos && (
+              <p className="text-[11px] text-slate-500 pt-1">
+                Pedidos de oração ativos: <span className="text-slate-300 font-medium">{indicadores.pedidosOracaoAtivos.total}</span>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Alertas Inteligentes (Fase 4.2) ----------
+
+const ESTILO_SEVERIDADE = {
+  CRITICAL: { icone: AlertTriangle, cor: "text-rose-400", bg: "bg-rose-500/10" },
+  WARNING: { icone: AlertCircle, cor: "text-amber-400", bg: "bg-amber-500/10" },
+  INFO: { icone: Info, cor: "text-sky-400", bg: "bg-sky-500/10" },
+};
+
+function CardAlertas({ alertas, carregando }) {
+  return (
+    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-white">Alertas Inteligentes (IA)</h3>
+        {alertas?.length > 0 && (
+          <span className="text-[10px] bg-amber-500/15 text-amber-300 font-medium px-2 py-0.5 rounded-full">
+            {alertas.length}
+          </span>
+        )}
+      </div>
+      {carregando ? (
+        <p className="text-sm text-slate-500">Carregando...</p>
+      ) : !alertas || alertas.length === 0 ? (
+        <p className="text-sm text-slate-500">Nenhum alerta no momento. Tudo em ordem! 🎉</p>
+      ) : (
+        <div className="space-y-3">
+          {alertas.map((a) => {
+            const estilo = ESTILO_SEVERIDADE[a.severidade] || ESTILO_SEVERIDADE.INFO;
+            const Icone = estilo.icone;
+            return (
+              <div key={a.id} className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-lg ${estilo.bg} flex items-center justify-center ${estilo.cor} shrink-0 mt-0.5`}>
+                  <Icone size={15} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white">{a.titulo}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{a.descricao}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Ações Sugeridas / Recomendações (Fase 4.3) ----------
+
+const ROTA_POR_CATEGORIA = {
+  "Frequência": "/cultos",
+  "Financeiro": "/financeiro",
+  "Células": "/celulas",
+  "Ministérios": "/ministerios",
+  "Eventos": "/eventos",
+  "Visitantes": "/membros",
+  "Membros": "/membros",
+  "Sistema": "/configuracoes",
+  "Segurança": "/configuracoes",
+};
+
+function CardRecomendacoes({ recomendacoes, carregando }) {
+  const navigate = useNavigate();
+  return (
+    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <h3 className="font-semibold text-white mb-4">Ações Sugeridas pela IA</h3>
+      {carregando ? (
+        <p className="text-sm text-slate-500">Carregando...</p>
+      ) : !recomendacoes || recomendacoes.length === 0 ? (
+        <p className="text-sm text-slate-500">Nenhuma ação pendente no momento.</p>
+      ) : (
+        <div className="space-y-3">
+          {recomendacoes.map((r) => (
+            <div key={r.id} className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-slate-200 truncate">{r.acaoRecomendada}</p>
+                <p className="text-[11px] text-slate-500">{r.areaResponsavel}</p>
+              </div>
+              <button
+                onClick={() => navigate(ROTA_POR_CATEGORIA[r.categoria] || "/")}
+                className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 font-medium shrink-0"
+              >
+                Ver <ArrowRight size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Previsões da IA (Fase 4.4 - infraestrutura, sem dado fictício) ----------
+
+const LABEL_METRICA_PREVISAO = {
+  membros: "Membros",
+  dizimos: "Dízimos",
+  batismos: "Batismos",
+  visitantes: "Visitantes",
+};
+
+function CardPrevisoes({ previsoes, carregando }) {
+  return (
+    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Sparkles size={16} className="text-violet-400" />
+        <h3 className="font-semibold text-white">Previsões da IA</h3>
+      </div>
+      <p className="text-xs text-slate-500 mb-4">Baseado em dados históricos</p>
+      {carregando ? (
+        <p className="text-sm text-slate-500">Carregando...</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {previsoes?.map((p) => (
+            <div key={p.metrica} className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+              <p className="text-xs text-slate-400 mb-1">{LABEL_METRICA_PREVISAO[p.metrica] || p.metrica}</p>
+              <p className="text-[11px] text-slate-500 leading-snug">{p.mensagem}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { usuario } = useAuth();
   const [stats, setStats] = useState(null);
@@ -100,7 +285,6 @@ export default function Dashboard() {
   const [pedidos, setPedidos] = useState([]);
   const [membros, setMembros] = useState([]);
   const [celulas, setCelulas] = useState([]);
-  const [crescimento, setCrescimento] = useState(dadosCrescimento);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
@@ -114,16 +298,6 @@ export default function Dashboard() {
 
         setStats(statsRes.data);
         setEventos(eventosRes.data.slice(0, 5));
-
-        if (statsRes.data?.membros_ativos) {
-          const mesAtual = new Date().getMonth();
-          setCrescimento(prev =>
-            prev.map((d, i) => i <= mesAtual
-              ? { ...d, membros: Math.round(statsRes.data.membros_ativos * ((i + 1) / (mesAtual + 1))) }
-              : d
-            )
-          );
-        }
 
         if (usuario?.tipo === "admin") {
           const [pedidosRes, membrosRes, celulasRes] = await Promise.all([
@@ -147,6 +321,17 @@ export default function Dashboard() {
 
   const totalMembros = stats?.membros_ativos ?? 0;
   const indicadores = stats?.indicadores ?? {};
+  const saudeDetalhada = stats?.saude_detalhada ?? null;
+  const alertas = stats?.alertas ?? [];
+  const recomendacoes = stats?.recomendacoes ?? [];
+  const previsoes = stats?.previsoes ?? [];
+
+  // Série real de crescimento (Fase 4.5), formatada para o gráfico
+  const serieMembros = stats?.historico?.membros?.serie ?? [];
+  const dadosCrescimento = serieMembros.map((p) => ({
+    mes: new Date(`${p.periodo}-01T00:00:00`).toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+    membros: p.valor,
+  }));
 
   const totalEmCelulas = celulas.reduce((soma, c) => soma + parseInt(c.total_membros, 10), 0);
   const semCelula = Math.max(totalMembros - totalEmCelulas, 0);
@@ -182,101 +367,35 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* KPIs ESTRATÉGICOS (Fase 3 - calculados no backend) */}
+      {/* KPIs ESTRATÉGICOS (Fase 3) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
-        <CardIndicador
-          icone={HeartPulse}
-          label="Igreja Saudável"
-          valor={indicadores.igreja_saudavel?.label ?? "..."}
-          cor="emerald"
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={Brain}
-          label="IA Score"
-          valor={indicadores.ia_score?.label ?? "..."}
-          cor="violet"
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={Activity}
-          label="Engajamento"
-          valor={indicadores.engajamento?.label ?? "..."}
-          cor="cyan"
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={TrendingUp}
-          label="Crescimento"
-          valor={indicadores.crescimento?.label ?? "..."}
-          cor="emerald"
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={Anchor}
-          label="Retenção"
-          valor={indicadores.retencao?.label ?? "..."}
-          cor="amber"
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={Wallet}
-          label="Financeiro"
-          valor={indicadores.financeiro_status?.label ?? "..."}
-          cor={indicadores.financeiro_status?.saudavel ? "emerald" : "amber"}
-          carregando={carregando}
-        />
-        <CardIndicador
-          icone={ShieldCheck}
-          label="Segurança"
-          valor={indicadores.seguranca?.label ?? "..."}
-          cor="slate"
-          carregando={carregando}
-        />
+        <CardIndicador icone={HeartPulse} label="Igreja Saudável" valor={indicadores.igreja_saudavel?.label ?? "..."} cor="emerald" carregando={carregando} />
+        <CardIndicador icone={Brain} label="IA Score" valor={indicadores.ia_score?.label ?? "..."} cor="violet" carregando={carregando} />
+        <CardIndicador icone={Activity} label="Engajamento" valor={indicadores.engajamento?.label ?? "..."} cor="cyan" carregando={carregando} />
+        <CardIndicador icone={TrendingUp} label="Crescimento" valor={indicadores.crescimento?.label ?? "..."} cor="emerald" carregando={carregando} />
+        <CardIndicador icone={Anchor} label="Retenção" valor={indicadores.retencao?.label ?? "..."} cor="amber" carregando={carregando} />
+        <CardIndicador icone={Wallet} label="Financeiro" valor={indicadores.financeiro_status?.label ?? "..."} cor={indicadores.financeiro_status?.saudavel ? "emerald" : "amber"} carregando={carregando} />
+        <CardIndicador icone={ShieldCheck} label="Segurança" valor={indicadores.seguranca?.label ?? "..."} cor="slate" carregando={carregando} />
       </div>
 
-      {/* CARDS DE ESTATÍSTICAS OPERACIONAIS */}
+      {/* CARDS OPERACIONAIS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <CardEstatistica
-          icone={Users}
-          label="Membros Ativos"
-          valor={totalMembros.toLocaleString("pt-BR")}
-          carregando={carregando}
-        />
-        <CardEstatistica
-          icone={HeartHandshake}
-          label="Pedidos de Oração"
-          valor={stats?.pedidos_em_oracao ?? 0}
-          carregando={carregando}
-        />
-        <CardEstatistica
-          icone={CalendarDays}
-          label="Eventos este Mês"
-          valor={stats?.eventos_este_mes ?? 0}
-          carregando={carregando}
-        />
-        <CardEstatistica
-          icone={Calendar}
-          label="Próximos Eventos"
-          valor={eventos.length}
-          carregando={carregando}
-        />
+        <CardEstatistica icone={Users} label="Membros Ativos" valor={totalMembros.toLocaleString("pt-BR")} carregando={carregando} />
+        <CardEstatistica icone={HeartHandshake} label="Pedidos de Oração" valor={stats?.pedidos_em_oracao ?? 0} carregando={carregando} />
+        <CardEstatistica icone={CalendarDays} label="Eventos este Mês" valor={stats?.eventos_este_mes ?? 0} carregando={carregando} />
+        <CardEstatistica icone={Calendar} label="Próximos Eventos" valor={eventos.length} carregando={carregando} />
       </div>
 
-      {/* GRÁFICO + EVENTOS + PEDIDOS */}
+      {/* GRÁFICO (histórico real) + EVENTOS + PEDIDOS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        {/* Gráfico de crescimento */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Crescimento de Membros</h3>
-            <select className="text-xs bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-slate-300">
-              <option>Este ano</option>
-            </select>
+            <span className="text-[10px] text-slate-500">Últimos 12 meses</span>
           </div>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={crescimento}>
+              <AreaChart data={dadosCrescimento}>
                 <defs>
                   <linearGradient id="gradMembros" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.45} />
@@ -285,7 +404,7 @@ export default function Dashboard() {
                 </defs>
                 <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip {...tooltipStyle} />
                 <Area type="monotone" dataKey="membros" stroke="#A78BFA" strokeWidth={2.5} fill="url(#gradMembros)" />
               </AreaChart>
@@ -293,7 +412,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Próximos Eventos */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Próximos Eventos</h3>
@@ -333,7 +451,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Pedidos de Oração */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Pedidos de Oração Recentes</h3>
@@ -368,45 +485,27 @@ export default function Dashboard() {
 
       {/* FINANCEIRO + CÉLULAS + ÚLTIMOS CADASTROS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        {/* Resumo Financeiro */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Resumo Financeiro</h3>
-            <select className="text-xs bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-slate-300">
-              <option>Este mês</option>
-            </select>
+            <span className="text-[10px] text-slate-500">Este mês</span>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm text-slate-300">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />Entradas
-              </span>
-              <span className="text-sm font-semibold text-slate-100">
-                {carregando ? "..." : formatarMoeda(financeiro.entradas)}
-              </span>
+              <span className="flex items-center gap-2 text-sm text-slate-300"><span className="w-2 h-2 rounded-full bg-emerald-400" />Entradas</span>
+              <span className="text-sm font-semibold text-slate-100">{carregando ? "..." : formatarMoeda(financeiro.entradas)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm text-slate-300">
-                <span className="w-2 h-2 rounded-full bg-rose-400" />Saídas
-              </span>
-              <span className="text-sm font-semibold text-slate-100">
-                {carregando ? "..." : formatarMoeda(financeiro.saidas)}
-              </span>
+              <span className="flex items-center gap-2 text-sm text-slate-300"><span className="w-2 h-2 rounded-full bg-rose-400" />Saídas</span>
+              <span className="text-sm font-semibold text-slate-100">{carregando ? "..." : formatarMoeda(financeiro.saidas)}</span>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-white/10">
-              <span className="flex items-center gap-2 text-sm text-slate-300">
-                <span className="w-2 h-2 rounded-full bg-violet-400" />Saldo
-              </span>
-              <span className="text-sm font-bold text-violet-400">
-                {carregando ? "..." : formatarMoeda(financeiro.saldo)}
-              </span>
+              <span className="flex items-center gap-2 text-sm text-slate-300"><span className="w-2 h-2 rounded-full bg-violet-400" />Saldo</span>
+              <span className="text-sm font-bold text-violet-400">{carregando ? "..." : formatarMoeda(financeiro.saldo)}</span>
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-4">Registro de saídas em breve.</p>
         </div>
 
-        {/* Donut Membros por Célula */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <h3 className="font-semibold text-white mb-4">Membros por Célula</h3>
           <div className="flex items-center gap-4">
@@ -414,9 +513,7 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={dadosCelulas} dataKey="valor" innerRadius={42} outerRadius={62} paddingAngle={2}>
-                    {dadosCelulas.map((_, i) => (
-                      <Cell key={i} fill={CORES_CELULA[i % CORES_CELULA.length]} stroke="none" />
-                    ))}
+                    {dadosCelulas.map((_, i) => (<Cell key={i} fill={CORES_CELULA[i % CORES_CELULA.length]} stroke="none" />))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
@@ -439,7 +536,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Últimos Cadastros */}
         <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Últimos Cadastros</h3>
@@ -470,6 +566,18 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* SAÚDE DA IGREJA + ALERTAS + AÇÕES SUGERIDAS (Fase 4.1 / 4.2 / 4.3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <CardSaudeIgreja saude={saudeDetalhada} carregando={carregando} />
+        <CardAlertas alertas={alertas} carregando={carregando} />
+        <CardRecomendacoes recomendacoes={recomendacoes} carregando={carregando} />
+      </div>
+
+      {/* PREVISÕES DA IA (Fase 4.4) */}
+      <div className="grid grid-cols-1 gap-4">
+        <CardPrevisoes previsoes={previsoes} carregando={carregando} />
       </div>
     </>
   );
