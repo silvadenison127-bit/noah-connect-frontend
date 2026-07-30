@@ -17,6 +17,7 @@ import Noticias from "./pages/Noticias";
 import Comunicacoes from "./pages/Comunicacoes";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
+import Cursos from "./pages/Cursos";
 import IANoah from "./pages/IANoah";
 import ExecutiveBI from "./pages/ExecutiveBI";
 import MapaIgreja from "./pages/MapaIgreja";
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/comunicacoes" element={<Comunicacoes />} />
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
+            <Route path="/cursos" element={<Cursos />} />
           </Route>
         </Routes>
       </BrowserRouter>

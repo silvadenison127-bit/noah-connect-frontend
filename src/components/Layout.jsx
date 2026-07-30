@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Calendar, CalendarDays, Church, Users2,
   HeartHandshake, Wallet, CircleDollarSign, Newspaper, Bell,
   FileBarChart2, Settings, Headset, Search, ChevronDown, Menu, LogOut, Camera,
-  Sparkles, BarChart3, MapPin, Moon
+  Sparkles, BarChart3, MapPin, Moon, GraduationCap
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -23,6 +23,7 @@ const menuItens = [
   { icone: Wallet, nome: "Dízimos e Ofertas", rota: "/dizimos" },
   { icone: CircleDollarSign, nome: "Financeiro", rota: "/financeiro" },
   { icone: HeartHandshake, nome: "Ministérios", rota: "/ministerios" },
+  { icone: GraduationCap, nome: "Cursos", rota: "/cursos" },
   { icone: Newspaper, nome: "Notícias", rota: "/noticias" },
   { icone: Bell, nome: "Comunicações", rota: "/comunicacoes" },
   { icone: FileBarChart2, nome: "Relatórios", rota: "/relatorios" },
