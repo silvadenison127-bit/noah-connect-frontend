@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
+import {
+  ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip,
+} from "recharts";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { Plus, GraduationCap, Pencil, Trash2, Users, Search } from "lucide-react";
+import CardEstatistica from "../components/CardEstatistica";
+import {
+  Plus, GraduationCap, Pencil, Trash2, Users, Search, Check, X as XIcon,
+  Clock, FileText, BarChart3, BookOpen, Heart, Shield, UserCheck, Calendar,
+} from "lucide-react";
 
 const ABAS = [
+  { id: "dashboard", nome: "Dashboard" },
   { id: "turmas", nome: "Turmas" },
   { id: "inscricoes", nome: "Inscricoes" },
   { id: "presenca", nome: "Lista de Presenca" },
@@ -23,13 +31,45 @@ const STATUS_INSCRICAO_LABEL = {
   concluido: { texto: "Concluido", cor: "bg-violet-500/10 text-violet-400" },
 };
 
+const STATUS_PRESENCA_OPCOES = [
+  { valor: "presente", label: "Presente", cor: "bg-emerald-600 text-white", icone: Check },
+  { valor: "ausente", label: "Ausente", cor: "bg-rose-600 text-white", icone: XIcon },
+  { valor: "atrasado", label: "Atrasado", cor: "bg-amber-600 text-white", icone: Clock },
+  { valor: "justificado", label: "Justificado", cor: "bg-blue-600 text-white", icone: FileText },
+];
+
+const ICONE_CURSO_PADRAO = {
+  "Consolidação": BookOpen,
+  "CME - Maturidade no Espírito": Shield,
+  "CTL - Treinamento de Líderes": UserCheck,
+  "Casais Radicais": Heart,
+};
+
+const tooltipStyle = {
+  contentStyle: { background: "#15152A", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 12 },
+  labelStyle: { color: "#fff" },
+  itemStyle: { color: "#C4B5FD" },
+};
+
+function hojeISO() {
+  const d = new Date();
+  return d.toISOString().substring(0, 10);
+}
+
 export default function Cursos() {
   const { usuario } = useAuth();
   const ehAdmin = usuario?.tipo === "admin";
 
-  const [abaAtiva, setAbaAtiva] = useState("turmas");
+  const [abaAtiva, setAbaAtiva] = useState("dashboard");
   const [cursos, setCursos] = useState([]);
   const [cursoFiltro, setCursoFiltro] = useState("");
+  const [buscaGlobal, setBuscaGlobal] = useState("");
+
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [carregandoDashboard, setCarregandoDashboard] = useState(true);
+  const [mostrarFormCurso, setMostrarFormCurso] = useState(false);
+  const [novoCurso, setNovoCurso] = useState({ nome: "", descricao: "" });
+  const [salvandoCurso, setSalvandoCurso] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
   const [carregandoTurmas, setCarregandoTurmas] = useState(true);
@@ -53,10 +93,58 @@ export default function Cursos() {
   const [salvandoInscricao, setSalvandoInscricao] = useState(false);
   const [todasTurmas, setTodasTurmas] = useState([]);
 
-  useEffect(() => {
+  const [turmaPresencaId, setTurmaPresencaId] = useState("");
+  const [dataAula, setDataAula] = useState(hojeISO());
+  const [listaPresenca, setListaPresenca] = useState([]);
+  const [carregandoPresenca, setCarregandoPresenca] = useState(false);
+  const [salvandoPresenca, setSalvandoPresenca] = useState(false);
+  const [frequenciaVisivel, setFrequenciaVisivel] = useState(null);
+
+  function carregarCursos() {
     api.get("/cursos").then((res) => setCursos(res.data)).catch(() => {});
+  }
+
+  useEffect(() => {
+    carregarCursos();
     api.get("/turmas").then((res) => setTodasTurmas(res.data)).catch(() => {});
   }, []);
+
+  function carregarDashboard() {
+    setCarregandoDashboard(true);
+    api.get("/cursos/dashboard-stats")
+      .then((res) => setDashboardStats(res.data))
+      .catch(() => setDashboardStats(null))
+      .finally(() => setCarregandoDashboard(false));
+  }
+
+  useEffect(() => {
+    if (abaAtiva === "dashboard") carregarDashboard();
+  }, [abaAtiva]);
+
+  async function salvarCurso(e) {
+    e.preventDefault();
+    setSalvandoCurso(true);
+    try {
+      await api.post("/cursos", novoCurso);
+      setMostrarFormCurso(false);
+      setNovoCurso({ nome: "", descricao: "" });
+      carregarCursos();
+    } catch (err) {
+      alert(err.response?.data?.erro || "Erro ao criar curso");
+    } finally {
+      setSalvandoCurso(false);
+    }
+  }
+
+  function irParaTurmasDoCurso(cursoId) {
+    setCursoFiltro(String(cursoId));
+    setAbaAtiva("turmas");
+  }
+
+  const dadosInscricoesPorMes = (dashboardStats?.inscricoes_por_mes ?? []).map((item) => ({
+    mes: new Date(`${item.mes}-01T00:00:00`).toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+    inscricoes: parseInt(item.total, 10),
+  }));
 
   function carregarTurmas() {
     setCarregandoTurmas(true);
@@ -127,6 +215,10 @@ export default function Cursos() {
     }
   }
 
+  const turmasFiltradasBusca = turmas.filter((t) =>
+    !buscaGlobal || t.nome.toLowerCase().includes(buscaGlobal.toLowerCase()) || (t.professor || "").toLowerCase().includes(buscaGlobal.toLowerCase())
+  );
+
   function carregarInscricoes() {
     setCarregandoInscricoes(true);
     const params = new URLSearchParams();
@@ -194,6 +286,65 @@ export default function Cursos() {
     }
   }
 
+  function carregarListaPresenca() {
+    if (!turmaPresencaId || !dataAula) {
+      setListaPresenca([]);
+      return;
+    }
+    setCarregandoPresenca(true);
+    api.get(`/presencas-cursos/turma/${turmaPresencaId}?data=${dataAula}`)
+      .then((res) => {
+        const lista = res.data.map((aluno) => ({
+          ...aluno,
+          status: aluno.status || "presente",
+        }));
+        setListaPresenca(lista);
+      })
+      .catch(() => setListaPresenca([]))
+      .finally(() => setCarregandoPresenca(false));
+  }
+
+  useEffect(() => {
+    if (abaAtiva === "presenca") carregarListaPresenca();
+  }, [abaAtiva, turmaPresencaId, dataAula]);
+
+  function alterarStatusAluno(inscricaoId, novoStatus) {
+    setListaPresenca((prev) =>
+      prev.map((a) => (a.inscricao_id === inscricaoId ? { ...a, status: novoStatus } : a))
+    );
+  }
+
+  async function salvarPresencas() {
+    if (listaPresenca.length === 0) return;
+    setSalvandoPresenca(true);
+    try {
+      const registros = listaPresenca.map((a) => ({ inscricao_id: a.inscricao_id, status: a.status }));
+      await api.post("/presencas-cursos/lote", { data_aula: dataAula, registros });
+      alert("Presenca salva com sucesso!");
+      carregarListaPresenca();
+    } catch (err) {
+      alert(err.response?.data?.erro || "Erro ao salvar presenca");
+    } finally {
+      setSalvandoPresenca(false);
+    }
+  }
+
+  async function verFrequencia(inscricaoId, nome) {
+    try {
+      const { data } = await api.get(`/presencas-cursos/frequencia/${inscricaoId}`);
+      setFrequenciaVisivel({ nome, ...data });
+    } catch (err) {
+      alert("Erro ao buscar frequencia");
+    }
+  }
+
+  const resumoPresenca = {
+    presentes: listaPresenca.filter((a) => a.status === "presente").length,
+    ausentes: listaPresenca.filter((a) => a.status === "ausente").length,
+    atrasados: listaPresenca.filter((a) => a.status === "atrasado").length,
+    justificados: listaPresenca.filter((a) => a.status === "justificado").length,
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -201,30 +352,86 @@ export default function Cursos() {
           <h2 className="font-semibold text-white text-lg">Cursos</h2>
           <p className="text-sm text-slate-500">Gerencie todos os cursos da igreja em um unico lugar.</p>
         </div>
-        {ehAdmin && abaAtiva === "turmas" && (
-          <button
-            onClick={abrirNovaTurma}
-            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
-          >
-            <Plus size={16} /> Nova Turma
-          </button>
-        )}
-        {ehAdmin && abaAtiva === "inscricoes" && (
-          <button
-            onClick={abrirNovaInscricao}
-            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
-          >
-            <Plus size={16} /> Nova Inscricao
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {ehAdmin && abaAtiva === "dashboard" && (
+            <button
+              onClick={() => setMostrarFormCurso(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
+            >
+              <Plus size={16} /> Novo Curso
+            </button>
+          )}
+          {ehAdmin && abaAtiva === "turmas" && (
+            <button
+              onClick={abrirNovaTurma}
+              className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
+            >
+              <Plus size={16} /> Nova Turma
+            </button>
+          )}
+          {ehAdmin && abaAtiva === "inscricoes" && (
+            <button
+              onClick={abrirNovaInscricao}
+              className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
+            >
+              <Plus size={16} /> Nova Inscricao
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 border-b border-white/5">
+      {(abaAtiva === "dashboard" || abaAtiva === "turmas") && (
+        <div className="relative max-w-md">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <input
+            placeholder="Buscar turma ou professor..."
+            value={buscaGlobal}
+            onChange={(e) => setBuscaGlobal(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+        </div>
+      )}
+
+      {mostrarFormCurso && (
+        <form onSubmit={salvarCurso} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 grid grid-cols-1 gap-3">
+          <input
+            required
+            placeholder="Nome do curso"
+            value={novoCurso.nome}
+            onChange={(e) => setNovoCurso({ ...novoCurso, nome: e.target.value })}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <textarea
+            placeholder="Descricao (opcional)"
+            value={novoCurso.descricao}
+            onChange={(e) => setNovoCurso({ ...novoCurso, descricao: e.target.value })}
+            rows={2}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <div className="flex gap-2">
+            <button
+              disabled={salvandoCurso}
+              className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
+            >
+              {salvandoCurso ? "Salvando..." : "Salvar Curso"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMostrarFormCurso(false)}
+              className="px-4 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="flex items-center gap-2 border-b border-white/5 overflow-x-auto">
         {ABAS.map((aba) => (
           <button
             key={aba.id}
             onClick={() => setAbaAtiva(aba.id)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors shrink-0 ${
               abaAtiva === aba.id
                 ? "border-violet-500 text-white"
                 : "border-transparent text-slate-500 hover:text-slate-300"
@@ -234,6 +441,96 @@ export default function Cursos() {
           </button>
         ))}
       </div>
+
+      {abaAtiva === "dashboard" && (
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-300 mb-3">Acesso Rapido</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {cursos.map((c) => {
+                const Icone = ICONE_CURSO_PADRAO[c.nome] || GraduationCap;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => irParaTurmasDoCurso(c.id)}
+                    className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4 flex flex-col items-center gap-2 hover:border-violet-500/40 hover:bg-white/[0.03] transition-colors"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
+                      <Icone size={20} />
+                    </div>
+                    <p className="text-xs font-medium text-slate-200 text-center leading-tight">{c.nome}</p>
+                    <span className="text-[10px] text-slate-500">{c.total_turmas} turma{c.total_turmas === "1" ? "" : "s"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <CardEstatistica icone={GraduationCap} label="Total de Cursos" valor={dashboardStats?.total_cursos ?? 0} carregando={carregandoDashboard} />
+            <CardEstatistica icone={Users} label="Turmas Ativas" valor={dashboardStats?.turmas_ativas ?? 0} carregando={carregandoDashboard} />
+            <CardEstatistica icone={UserCheck} label="Alunos Matriculados" valor={dashboardStats?.alunos_matriculados ?? 0} carregando={carregandoDashboard} />
+            <CardEstatistica icone={Clock} label="Inscricoes Pendentes" valor={dashboardStats?.inscricoes_pendentes ?? 0} carregando={carregandoDashboard} />
+            <CardEstatistica icone={BarChart3} label="Frequencia Media" valor={`${dashboardStats?.frequencia_media ?? 0}%`} carregando={carregandoDashboard} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-white">Inscricoes por Mes</h3>
+                <span className="text-[10px] text-slate-500">Ultimos 6 meses</span>
+              </div>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={dadosInscricoesPorMes}>
+                    <defs>
+                      <linearGradient id="gradInscricoes" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.45} />
+                        <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
+                    <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip {...tooltipStyle} />
+                    <Area type="monotone" dataKey="inscricoes" stroke="#A78BFA" strokeWidth={2.5} fill="url(#gradInscricoes)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-white">Proximas Aulas</h3>
+                <Calendar size={16} className="text-slate-500" />
+              </div>
+              {carregandoDashboard ? (
+                <p className="text-sm text-slate-500">Carregando...</p>
+              ) : !dashboardStats?.proximas_turmas || dashboardStats.proximas_turmas.length === 0 ? (
+                <p className="text-sm text-slate-500">Nenhuma turma ativa no momento.</p>
+              ) : (
+                <div className="space-y-3">
+                  {dashboardStats.proximas_turmas.map((t) => (
+                    <div key={t.id} className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
+                        <GraduationCap size={16} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white truncate">{t.nome}</p>
+                        <p className="text-xs text-slate-500 truncate">
+                          {t.curso_nome}
+                          {t.dias_semana ? ` · ${t.dias_semana}` : ""}
+                          {t.horario ? ` as ${t.horario}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {abaAtiva === "turmas" && (
         <div className="space-y-4">
@@ -353,10 +650,10 @@ export default function Cursos() {
           <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm divide-y divide-white/5">
             {carregandoTurmas ? (
               <p className="text-sm text-slate-500 p-5">Carregando...</p>
-            ) : turmas.length === 0 ? (
+            ) : turmasFiltradasBusca.length === 0 ? (
               <p className="text-sm text-slate-500 p-5">Nenhuma turma cadastrada ainda.</p>
             ) : (
-              turmas.map((t) => {
+              turmasFiltradasBusca.map((t) => {
                 const statusInfo = STATUS_LABEL[t.status] || STATUS_LABEL.planejada;
                 return (
                   <div key={t.id} className="p-4 flex items-center gap-4 hover:bg-white/[0.02]">
@@ -553,8 +850,138 @@ export default function Cursos() {
       )}
 
       {abaAtiva === "presenca" && (
-        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 p-8 text-center text-slate-500 text-sm">
-          Aba de Lista de Presenca em construcao.
+        <div className="space-y-4">
+          <div className="flex gap-3 flex-wrap items-end bg-[#0F0F1E] rounded-2xl border border-white/10 p-5">
+            <div className="flex-1 min-w-[220px]">
+              <label className="text-xs text-slate-400 mb-1 block">Turma</label>
+              <select
+                value={turmaPresencaId}
+                onChange={(e) => setTurmaPresencaId(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              >
+                <option value="" className="bg-[#0F0F1E]">Selecione a turma</option>
+                {todasTurmas.map((t) => (
+                  <option key={t.id} value={t.id} className="bg-[#0F0F1E]">{t.curso_nome} - {t.nome}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-slate-400 mb-1 block">Data da aula</label>
+              <input
+                type="date"
+                value={dataAula}
+                onChange={(e) => setDataAula(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50 [color-scheme:dark]"
+              />
+            </div>
+            {ehAdmin && listaPresenca.length > 0 && (
+              <button
+                onClick={salvarPresencas}
+                disabled={salvandoPresenca}
+                className="bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl px-4 py-2"
+              >
+                {salvandoPresenca ? "Salvando..." : "Salvar Presenca"}
+              </button>
+            )}
+          </div>
+
+          {listaPresenca.length > 0 && (
+            <div className="flex gap-3 flex-wrap">
+              <span className="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-full">
+                {resumoPresenca.presentes} presentes
+              </span>
+              <span className="text-xs bg-rose-500/10 text-rose-400 px-3 py-1.5 rounded-full">
+                {resumoPresenca.ausentes} ausentes
+              </span>
+              <span className="text-xs bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-full">
+                {resumoPresenca.atrasados} atrasados
+              </span>
+              <span className="text-xs bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-full">
+                {resumoPresenca.justificados} justificados
+              </span>
+            </div>
+          )}
+
+          <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm divide-y divide-white/5">
+            {!turmaPresencaId ? (
+              <p className="text-sm text-slate-500 p-5">Selecione uma turma e uma data para ver a lista de chamada.</p>
+            ) : carregandoPresenca ? (
+              <p className="text-sm text-slate-500 p-5">Carregando...</p>
+            ) : listaPresenca.length === 0 ? (
+              <p className="text-sm text-slate-500 p-5">Nenhum aluno matriculado nesta turma.</p>
+            ) : (
+              listaPresenca.map((aluno) => (
+                <div key={aluno.inscricao_id} className="p-4 flex items-center gap-4 hover:bg-white/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0 text-xs font-semibold">
+                    {aluno.nome_completo?.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                  </div>
+                  <p className="text-sm font-medium text-white flex-1 min-w-0 truncate">{aluno.nome_completo}</p>
+                  <div className="flex gap-1 flex-wrap shrink-0">
+                    {STATUS_PRESENCA_OPCOES.map((opcao) => {
+                      const Icone = opcao.icone;
+                      const ativo = aluno.status === opcao.valor;
+                      return (
+                        <button
+                          key={opcao.valor}
+                          onClick={() => ehAdmin && alterarStatusAluno(aluno.inscricao_id, opcao.valor)}
+                          disabled={!ehAdmin}
+                          title={opcao.label}
+                          className={`p-2 rounded-lg text-xs flex items-center gap-1 transition-colors ${
+                            ativo ? opcao.cor : "bg-white/5 text-slate-400 hover:bg-white/10"
+                          }`}
+                        >
+                          <Icone size={14} />
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => verFrequencia(aluno.inscricao_id, aluno.nome_completo)}
+                      title="Ver frequencia"
+                      className="p-2 rounded-lg text-xs bg-white/5 text-slate-400 hover:bg-white/10"
+                    >
+                      <BarChart3 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {frequenciaVisivel && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50" onClick={() => setFrequenciaVisivel(null)}>
+              <div className="bg-[#0F0F1E] border border-white/10 rounded-2xl shadow-xl w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
+                <h3 className="font-semibold text-white mb-4">Frequencia de {frequenciaVisivel.nome}</h3>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-slate-500">Presencas</p>
+                    <p className="text-lg font-semibold text-emerald-400">{frequenciaVisivel.presencas}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-slate-500">Faltas</p>
+                    <p className="text-lg font-semibold text-rose-400">{frequenciaVisivel.faltas}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-slate-500">Atrasos</p>
+                    <p className="text-lg font-semibold text-amber-400">{frequenciaVisivel.atrasos}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-slate-500">Justificadas</p>
+                    <p className="text-lg font-semibold text-blue-400">{frequenciaVisivel.justificadas}</p>
+                  </div>
+                </div>
+                <div className="bg-violet-500/10 rounded-xl p-3 text-center mb-4">
+                  <p className="text-xs text-slate-400">Percentual de Frequencia</p>
+                  <p className="text-2xl font-bold text-violet-400">{frequenciaVisivel.percentual_frequencia}%</p>
+                </div>
+                <button
+                  onClick={() => setFrequenciaVisivel(null)}
+                  className="w-full px-4 py-2 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
