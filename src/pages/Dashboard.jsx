@@ -10,6 +10,7 @@ import {
   AlertTriangle, AlertCircle, Info, ArrowRight, Sparkles
 } from "lucide-react";
 import api from "../services/api";
+import CardEstatistica from "../components/CardEstatistica";
 import { useAuth } from "../context/AuthContext";
 
 const CORES_CELULA = ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#EDE9FE"];
@@ -22,22 +23,6 @@ function Avatar({ nome, tamanho = 32 }) {
       className="rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-semibold shrink-0"
     >
       {iniciais}
-    </div>
-  );
-}
-
-function CardEstatistica({ icone: Icone, label, valor, carregando }) {
-  return (
-    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 flex flex-col gap-3 min-w-0">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
-          <Icone size={20} />
-        </div>
-        <p className="text-sm text-slate-400">{label}</p>
-      </div>
-      <p className="text-2xl font-bold text-white tabular-nums">
-        {carregando ? "..." : valor}
-      </p>
     </div>
   );
 }
