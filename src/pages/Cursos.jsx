@@ -5,9 +5,13 @@ import {
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import CardEstatistica from "../components/CardEstatistica";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 import {
   Plus, GraduationCap, Pencil, Trash2, Users, Search, Check, X as XIcon,
   Clock, FileText, BarChart3, BookOpen, Heart, Shield, UserCheck, Calendar,
+  Download, FileSpreadsheet,
 } from "lucide-react";
 
 const ABAS = [
@@ -15,6 +19,7 @@ const ABAS = [
   { id: "turmas", nome: "Turmas" },
   { id: "inscricoes", nome: "Inscricoes" },
   { id: "presenca", nome: "Lista de Presenca" },
+  { id: "relatorios", nome: "Relatorios" },
 ];
 
 const STATUS_LABEL = {
@@ -99,6 +104,11 @@ export default function Cursos() {
   const [carregandoPresenca, setCarregandoPresenca] = useState(false);
   const [salvandoPresenca, setSalvandoPresenca] = useState(false);
   const [frequenciaVisivel, setFrequenciaVisivel] = useState(null);
+
+  const [relatorioTurmaId, setRelatorioTurmaId] = useState("");
+  const [relatorioTipo, setRelatorioTipo] = useState("alunos");
+  const [relatorioDados, setRelatorioDados] = useState([]);
+  const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
 
   function carregarCursos() {
     api.get("/cursos").then((res) => setCursos(res.data)).catch(() => {});
@@ -336,6 +346,96 @@ export default function Cursos() {
     } catch (err) {
       alert("Erro ao buscar frequencia");
     }
+  }
+
+  function carregarRelatorio() {
+    if (!relatorioTurmaId) {
+      setRelatorioDados([]);
+      return;
+    }
+    setCarregandoRelatorio(true);
+    const rota = relatorioTipo === "alunos"
+      ? `/inscricoes-cursos?turma_id=${relatorioTurmaId}`
+      : `/presencas-cursos/turma/${relatorioTurmaId}/relatorio-frequencia`;
+    api.get(rota)
+      .then((res) => setRelatorioDados(res.data))
+      .catch(() => setRelatorioDados([]))
+      .finally(() => setCarregandoRelatorio(false));
+  }
+
+  useEffect(() => {
+    if (abaAtiva === "relatorios") carregarRelatorio();
+  }, [abaAtiva, relatorioTurmaId, relatorioTipo]);
+
+  function turmaSelecionadaNome() {
+    const t = todasTurmas.find((x) => String(x.id) === String(relatorioTurmaId));
+    return t ? `${t.curso_nome} - ${t.nome}` : "";
+  }
+
+  function colunasRelatorio() {
+    if (relatorioTipo === "alunos") {
+      return [
+        { header: "Nome", key: "nome_completo" },
+        { header: "Telefone", key: "telefone" },
+        { header: "E-mail", key: "email" },
+        { header: "CPF", key: "cpf" },
+        { header: "Status", key: "status" },
+      ];
+    }
+    return [
+      { header: "Nome", key: "nome_completo" },
+      { header: "Presencas", key: "presencas" },
+      { header: "Faltas", key: "faltas" },
+      { header: "Atrasos", key: "atrasos" },
+      { header: "Justificadas", key: "justificadas" },
+      { header: "Frequencia", key: "percentual_frequencia" },
+    ];
+  }
+
+  function exportarPDF() {
+    if (relatorioDados.length === 0) return;
+    const colunas = colunasRelatorio();
+    const doc = new jsPDF();
+    const titulo = relatorioTipo === "alunos" ? "Lista de Alunos" : "Relatorio de Frequencia";
+
+    doc.setFontSize(14);
+    doc.text(titulo, 14, 15);
+    doc.setFontSize(10);
+    doc.text(turmaSelecionadaNome(), 14, 22);
+
+    autoTable(doc, {
+      startY: 28,
+      head: [colunas.map((c) => c.header)],
+      body: relatorioDados.map((linha) =>
+        colunas.map((c) => {
+          const valor = linha[c.key];
+          if (c.key === "percentual_frequencia") return `${valor ?? 0}%`;
+          return valor ?? "-";
+        })
+      ),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [139, 92, 246] },
+    });
+
+    doc.save(`${titulo.replace(/\s+/g, "_")}.pdf`);
+  }
+
+  function exportarExcel() {
+    if (relatorioDados.length === 0) return;
+    const colunas = colunasRelatorio();
+    const linhas = relatorioDados.map((linha) => {
+      const obj = {};
+      colunas.forEach((c) => {
+        const valor = linha[c.key];
+        obj[c.header] = c.key === "percentual_frequencia" ? `${valor ?? 0}%` : (valor ?? "-");
+      });
+      return obj;
+    });
+    const planilha = XLSX.utils.json_to_sheet(linhas);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, "Relatorio");
+    const titulo = relatorioTipo === "alunos" ? "Lista_de_Alunos" : "Relatorio_de_Frequencia";
+    XLSX.writeFile(livro, `${titulo}.xlsx`);
   }
 
   const resumoPresenca = {
@@ -982,6 +1082,84 @@ export default function Cursos() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {abaAtiva === "relatorios" && (
+        <div className="space-y-4">
+          <div className="flex gap-3 flex-wrap items-end bg-[#0F0F1E] rounded-2xl border border-white/10 p-5">
+            <div className="flex-1 min-w-[220px]">
+              <label className="text-xs text-slate-400 mb-1 block">Turma</label>
+              <select
+                value={relatorioTurmaId}
+                onChange={(e) => setRelatorioTurmaId(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              >
+                <option value="" className="bg-[#0F0F1E]">Selecione a turma</option>
+                {todasTurmas.map((t) => (
+                  <option key={t.id} value={t.id} className="bg-[#0F0F1E]">{t.curso_nome} - {t.nome}</option>
+                ))}
+              </select>
+            </div>
+            <div className="min-w-[200px]">
+              <label className="text-xs text-slate-400 mb-1 block">Tipo de relatorio</label>
+              <select
+                value={relatorioTipo}
+                onChange={(e) => setRelatorioTipo(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              >
+                <option value="alunos" className="bg-[#0F0F1E]">Lista de Alunos</option>
+                <option value="frequencia" className="bg-[#0F0F1E]">Frequencia por Turma</option>
+              </select>
+            </div>
+            {relatorioDados.length > 0 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={exportarPDF}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium rounded-xl px-4 py-2"
+                >
+                  <Download size={16} /> PDF
+                </button>
+                <button
+                  onClick={exportarExcel}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium rounded-xl px-4 py-2"
+                >
+                  <FileSpreadsheet size={16} /> Excel
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm overflow-x-auto">
+            {!relatorioTurmaId ? (
+              <p className="text-sm text-slate-500 p-5">Selecione uma turma para gerar o relatorio.</p>
+            ) : carregandoRelatorio ? (
+              <p className="text-sm text-slate-500 p-5">Carregando...</p>
+            ) : relatorioDados.length === 0 ? (
+              <p className="text-sm text-slate-500 p-5">Nenhum dado encontrado para esta turma.</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 text-left text-slate-400">
+                    {colunasRelatorio().map((c) => (
+                      <th key={c.key} className="px-4 py-3 font-medium whitespace-nowrap">{c.header}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {relatorioDados.map((linha, i) => (
+                    <tr key={i} className="hover:bg-white/[0.02]">
+                      {colunasRelatorio().map((c) => (
+                        <td key={c.key} className="px-4 py-3 text-slate-200 whitespace-nowrap">
+                          {c.key === "percentual_frequencia" ? `${linha[c.key] ?? 0}%` : (linha[c.key] ?? "-")}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       )}
     </div>
