@@ -9,25 +9,65 @@ import {
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
-const menuItens = [
-  { icone: LayoutDashboard, nome: "Dashboard", rota: "/" },
-  { icone: Sparkles, nome: "IA Noah", rota: "/ia-noah", badge: "Novo" },
-  { icone: BarChart3, nome: "Executive BI", rota: "/executive-bi" },
-  { icone: MapPin, nome: "Mapa da Igreja", rota: "/mapa" },
-  { icone: Users, nome: "Membros", rota: "/membros" },
-  { icone: Calendar, nome: "Agenda", rota: "/agenda" },
-  { icone: CalendarDays, nome: "Eventos", rota: "/eventos" },
-  { icone: Church, nome: "Cultos", rota: "/cultos" },
-  { icone: Users2, nome: "Células", rota: "/celulas" },
-  { icone: HeartHandshake, nome: "Pedidos de Oração", rota: "/oracao" },
-  { icone: Wallet, nome: "Dízimos e Ofertas", rota: "/dizimos" },
-  { icone: CircleDollarSign, nome: "Financeiro", rota: "/financeiro" },
-  { icone: HeartHandshake, nome: "Ministérios", rota: "/ministerios" },
-  { icone: GraduationCap, nome: "Cursos", rota: "/cursos" },
-  { icone: Newspaper, nome: "Notícias", rota: "/noticias" },
-  { icone: Bell, nome: "Comunicações", rota: "/comunicacoes" },
-  { icone: FileBarChart2, nome: "Relatórios", rota: "/relatorios" },
-  { icone: Settings, nome: "Configurações", rota: "/configuracoes" },
+const GRUPOS_MENU = [
+  {
+    titulo: "Painel",
+    itens: [
+      { icone: LayoutDashboard, nome: "Dashboard", rota: "/" },
+      { icone: BarChart3, nome: "Executive BI", rota: "/executive-bi" },
+      { icone: Sparkles, nome: "IA Noah", rota: "/ia-noah", badge: "Novo" },
+    ],
+  },
+  {
+    titulo: "Pessoas",
+    itens: [
+      { icone: Users, nome: "Membros", rota: "/membros" },
+      { icone: Users2, nome: "Células", rota: "/celulas" },
+      { icone: HeartHandshake, nome: "Ministérios", rota: "/ministerios" },
+    ],
+  },
+  {
+    titulo: "Operação",
+    itens: [
+      { icone: Church, nome: "Cultos", rota: "/cultos" },
+      { icone: Calendar, nome: "Agenda", rota: "/agenda" },
+      { icone: CalendarDays, nome: "Eventos", rota: "/eventos" },
+      { icone: HeartHandshake, nome: "Pedidos de Oração", rota: "/oracao" },
+    ],
+  },
+  {
+    titulo: "Financeiro",
+    itens: [
+      { icone: Wallet, nome: "Dízimos e Ofertas", rota: "/dizimos" },
+      { icone: CircleDollarSign, nome: "Financeiro", rota: "/financeiro" },
+    ],
+  },
+  {
+    titulo: "Ensino",
+    itens: [
+      { icone: GraduationCap, nome: "Cursos", rota: "/cursos" },
+    ],
+  },
+  {
+    titulo: "Estratégia",
+    itens: [
+      { icone: MapPin, nome: "Mapa da Igreja", rota: "/mapa" },
+      { icone: FileBarChart2, nome: "Relatórios", rota: "/relatorios" },
+    ],
+  },
+  {
+    titulo: "Comunicação",
+    itens: [
+      { icone: Newspaper, nome: "Notícias", rota: "/noticias" },
+      { icone: Bell, nome: "Comunicações", rota: "/comunicacoes" },
+    ],
+  },
+  {
+    titulo: "Sistema",
+    itens: [
+      { icone: Settings, nome: "Configurações", rota: "/configuracoes" },
+    ],
+  },
 ];
 
 const WHATSAPP_SUPORTE = "5541997604950";
@@ -131,40 +171,51 @@ export default function Layout({ titulo = "Dashboard" }) {
             <p className="text-3xl font-bold italic -mt-1" style={{ fontFamily: "Georgia, serif" }}>noah</p>
           )}
         </div>
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {menuItens.map((item) => {
-            const Icone = item.icone;
-            return (
-              <NavLink
-                key={item.nome}
-                to={item.rota}
-                end={item.rota === "/"}
-                title={menuRecolhido ? item.nome : undefined}
-                className={({ isActive }) =>
-                  `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                    isActive
-                      ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-900/40"
-                      : "text-violet-200/60 hover:bg-white/5 hover:text-white"
-                  }`
-                }
-              >
-                <div className="relative">
-                  <Icone size={18} />
-                  {item.rota === "/comunicacoes" && naoLidos > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
-                      {naoLidos > 9 ? "9+" : naoLidos}
-                    </span>
-                  )}
-                </div>
-                {!menuRecolhido && <span className="truncate flex-1">{item.nome}</span>}
-                {!menuRecolhido && item.badge && (
-                  <span className="text-[9px] font-bold bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded-md border border-violet-500/30">
-                    {item.badge}
-                  </span>
-                )}
-              </NavLink>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-4">
+          {GRUPOS_MENU.map((grupo) => (
+            <div key={grupo.titulo}>
+              {!menuRecolhido && (
+                <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-500 uppercase">
+                  {grupo.titulo}
+                </p>
+              )}
+              <div className="space-y-1">
+                {grupo.itens.map((item) => {
+                  const Icone = item.icone;
+                  return (
+                    <NavLink
+                      key={item.nome}
+                      to={item.rota}
+                      end={item.rota === "/"}
+                      title={menuRecolhido ? item.nome : undefined}
+                      className={({ isActive }) =>
+                        `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                          isActive
+                            ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-900/40"
+                            : "text-violet-200/60 hover:bg-white/5 hover:text-white"
+                        }`
+                      }
+                    >
+                      <div className="relative">
+                        <Icone size={18} />
+                        {item.rota === "/comunicacoes" && naoLidos > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
+                            {naoLidos > 9 ? "9+" : naoLidos}
+                          </span>
+                        )}
+                      </div>
+                      {!menuRecolhido && <span className="truncate flex-1">{item.nome}</span>}
+                      {!menuRecolhido && item.badge && (
+                        <span className="text-[9px] font-bold bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded-md border border-violet-500/30">
+                          {item.badge}
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
         <div className="p-4 border-t border-white/5 space-y-1">
           <button
