@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import api from "../services/api";
 import CardEstatistica from "../components/CardEstatistica";
+import VisaoGeralMetrics from "../components/VisaoGeralMetrics";
 import { useAuth } from "../context/AuthContext";
 
 const CORES_CELULA = ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#EDE9FE"];
@@ -341,6 +342,8 @@ export default function Dashboard() {
           {new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}
         </div>
       </div>
+
+      <VisaoGeralMetrics />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
         <CardIndicador icone={HeartPulse} label="Igreja Saudável" valor={indicadores.igreja_saudavel?.label ?? "..."} cor="emerald" carregando={carregando} />
