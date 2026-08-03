@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Users, UserCog, Wallet, Church, HeartHandshake, CalendarDays,
   Newspaper, Megaphone, GraduationCap, BookOpen, Layers, ChevronDown,
-  Landmark, ShieldCheck, ShieldAlert, ShieldX, CheckCircle2, AlertCircle, XCircle, HelpCircle
+  Landmark, ShieldCheck, ShieldAlert, ShieldX, CheckCircle2, AlertCircle,
+  XCircle, HelpCircle, HeartPulse, Brain, Activity, TrendingUp, Anchor
 } from "lucide-react";
 import api from "../services/api";
 import CardEstatistica from "./CardEstatistica";
 
-// Formata o valor de um KPI conforme seu estado (contrato { valor, estado }).
 function exibir(kpi, { moeda = false } = {}) {
   if (!kpi) return "...";
   switch (kpi.estado) {
@@ -26,14 +26,12 @@ function exibir(kpi, { moeda = false } = {}) {
   }
 }
 
-// Visual da classificação de segurança (seguro / atencao / critico)
 const ESTILO_SEGURANCA = {
   seguro: { icone: ShieldCheck, cor: "text-emerald-400", bg: "bg-emerald-500/10", label: "Seguro" },
   atencao: { icone: ShieldAlert, cor: "text-amber-400", bg: "bg-amber-500/10", label: "Atenção" },
   critico: { icone: ShieldX, cor: "text-rose-400", bg: "bg-rose-500/10", label: "Crítico" },
 };
 
-// Visual do status de cada critério individual
 const ESTILO_STATUS_CRITERIO = {
   ok: { icone: CheckCircle2, cor: "text-emerald-400" },
   atencao: { icone: AlertCircle, cor: "text-amber-400" },
@@ -111,16 +109,77 @@ function CardSeguranca({ seguranca, carregando }) {
   );
 }
 
+// Cores por indicador inteligente (badge compacto)
+const CORES_INDICADOR = {
+  emerald: { icone: "text-emerald-400", bg: "bg-emerald-500/10", valor: "text-emerald-400" },
+  violet: { icone: "text-violet-400", bg: "bg-violet-500/10", valor: "text-violet-400" },
+  cyan: { icone: "text-cyan-400", bg: "bg-cyan-500/10", valor: "text-cyan-400" },
+  amber: { icone: "text-amber-400", bg: "bg-amber-500/10", valor: "text-amber-400" },
+  rose: { icone: "text-rose-400", bg: "bg-rose-500/10", valor: "text-rose-400" },
+  slate: { icone: "text-slate-400", bg: "bg-white/5", valor: "text-slate-300" },
+};
+
+function CardIndicadorInteligente({ icone: Icone, label, rotulo, cor, carregando }) {
+  const c = CORES_INDICADOR[cor] || CORES_INDICADOR.slate;
+  return (
+    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4 flex flex-col gap-2 min-w-0">
+      <div className="flex items-center gap-2">
+        <div className={`w-8 h-8 rounded-lg ${c.bg} flex items-center justify-center ${c.icone} shrink-0`}>
+          <Icone size={16} />
+        </div>
+        <p className="text-xs text-slate-400 truncate">{label}</p>
+      </div>
+      <p className={`text-lg font-bold ${c.valor} truncate`}>
+        {carregando ? "..." : rotulo}
+      </p>
+    </div>
+  );
+}
+
+// Deriva a cor de cada indicador a partir do seu estado/classificação real.
+function corIgrejaSaudavel(kpi) {
+  if (!kpi || kpi.estado !== "real") return "slate";
+  if (kpi.valor >= 70) return "emerald";
+  if (kpi.valor >= 40) return "amber";
+  return "rose";
+}
+function corIaScore(kpi) {
+  if (!kpi || kpi.estado !== "real") return "slate";
+  return kpi.valor >= 70 ? "violet" : kpi.valor >= 40 ? "amber" : "rose";
+}
+function corPercentualNeutro(kpi) {
+  if (!kpi || kpi.estado !== "real") return "slate";
+  return "cyan";
+}
+function corCrescimento(kpi) {
+  if (!kpi || kpi.estado !== "real" || typeof kpi.valor !== "number") return "slate";
+  return kpi.valor >= 0 ? "emerald" : "amber";
+}
+function corFinanceiro(kpi) {
+  if (!kpi || kpi.estado !== "real") return "slate";
+  if (kpi.classificacao === "saudavel") return "emerald";
+  if (kpi.classificacao === "critico") return "rose";
+  return "amber";
+}
+
 export default function VisaoGeralMetrics() {
   const [contagens, setContagens] = useState(null);
   const [seguranca, setSeguranca] = useState(null);
+  const [crescimento, setCrescimento] = useState(null);
+  const [retencao, setRetencao] = useState(null);
+  const [engajamento, setEngajamento] = useState(null);
+  const [financeiroStatus, setFinanceiroStatus] = useState(null);
+  const [igrejaSaudavel, setIgrejaSaudavel] = useState(null);
+  const [iaScore, setIaScore] = useState(null);
+
   const [carregando, setCarregando] = useState(true);
-  const [carregandoSeguranca, setCarregandoSeguranca] = useState(true);
+  const [carregandoInteligentes, setCarregandoInteligentes] = useState(true);
   const [erro, setErro] = useState(false);
   const [expandido, setExpandido] = useState(false);
 
   useEffect(() => {
     let ativo = true;
+
     (async () => {
       try {
         const res = await api.get("/metrics/contagens");
@@ -134,12 +193,25 @@ export default function VisaoGeralMetrics() {
 
     (async () => {
       try {
-        const res = await api.get("/metrics/seguranca");
-        if (ativo) setSeguranca(res.data);
-      } catch {
-        if (ativo) setSeguranca(null);
+        const [seg, cres, ret, eng, fin, saude, score] = await Promise.all([
+          api.get("/metrics/seguranca").catch(() => null),
+          api.get("/metrics/crescimento").catch(() => null),
+          api.get("/metrics/retencao").catch(() => null),
+          api.get("/metrics/engajamento").catch(() => null),
+          api.get("/metrics/financeiro-status").catch(() => null),
+          api.get("/metrics/igreja-saudavel").catch(() => null),
+          api.get("/metrics/ia-score").catch(() => null),
+        ]);
+        if (!ativo) return;
+        setSeguranca(seg?.data ?? null);
+        setCrescimento(cres?.data ?? null);
+        setRetencao(ret?.data ?? null);
+        setEngajamento(eng?.data ?? null);
+        setFinanceiroStatus(fin?.data ?? null);
+        setIgrejaSaudavel(saude?.data ?? null);
+        setIaScore(score?.data ?? null);
       } finally {
-        if (ativo) setCarregandoSeguranca(false);
+        if (ativo) setCarregandoInteligentes(false);
       }
     })();
 
@@ -148,7 +220,6 @@ export default function VisaoGeralMetrics() {
 
   const c = contagens ?? {};
 
-  // Cards secundários (painel expansível)
   const secundarios = [
     { icone: Church, label: "Ministérios", kpi: c.ministerios },
     { icone: GraduationCap, label: "Cursos Ativos", kpi: c.cursos },
@@ -182,8 +253,42 @@ export default function VisaoGeralMetrics() {
         <CardEstatistica icone={Wallet} label="Saldo do Mês" valor={exibir(c.saldoDoMes, { moeda: true })} carregando={carregando} />
       </div>
 
-      {/* Card de Segurança (indicador inteligente, Fase 2) */}
-      <CardSeguranca seguranca={seguranca} carregando={carregandoSeguranca} />
+      {/* Indicadores inteligentes (Fase 2) — sempre com dado real ou "Aguardando dados" */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <CardIndicadorInteligente
+          icone={HeartPulse} label="Igreja Saudável"
+          rotulo={igrejaSaudavel?.rotulo ?? "..."} cor={corIgrejaSaudavel(igrejaSaudavel)}
+          carregando={carregandoInteligentes}
+        />
+        <CardIndicadorInteligente
+          icone={Brain} label="IA Score"
+          rotulo={iaScore?.rotulo ?? "..."} cor={corIaScore(iaScore)}
+          carregando={carregandoInteligentes}
+        />
+        <CardIndicadorInteligente
+          icone={Activity} label="Engajamento"
+          rotulo={engajamento?.rotulo ?? "..."} cor={corPercentualNeutro(engajamento)}
+          carregando={carregandoInteligentes}
+        />
+        <CardIndicadorInteligente
+          icone={TrendingUp} label="Crescimento"
+          rotulo={crescimento?.rotulo ?? "..."} cor={corCrescimento(crescimento)}
+          carregando={carregandoInteligentes}
+        />
+        <CardIndicadorInteligente
+          icone={Anchor} label="Retenção"
+          rotulo={retencao?.rotulo ?? "..."} cor={corPercentualNeutro(retencao)}
+          carregando={carregandoInteligentes}
+        />
+        <CardIndicadorInteligente
+          icone={Wallet} label="Financeiro"
+          rotulo={financeiroStatus?.rotulo ?? "..."} cor={corFinanceiro(financeiroStatus)}
+          carregando={carregandoInteligentes}
+        />
+      </div>
+
+      {/* Card de Segurança (detalhado, com critérios expansíveis) */}
+      <CardSeguranca seguranca={seguranca} carregando={carregandoInteligentes} />
 
       {/* Botão Ver mais */}
       <button
@@ -194,7 +299,6 @@ export default function VisaoGeralMetrics() {
         <ChevronDown size={14} className={`transition-transform ${expandido ? "rotate-180" : ""}`} />
       </button>
 
-      {/* Painel expansível */}
       {expandido && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {secundarios.map((s) => (
