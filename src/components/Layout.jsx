@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import GlobalSearch from "./GlobalSearch";
 
 const GRUPOS_MENU = [
   {
@@ -107,6 +108,7 @@ export default function Layout({ titulo = "Dashboard" }) {
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const [erroFoto, setErroFoto] = useState(null);
   const [naoLidos, setNaoLidos] = useState(0);
+  const [buscaAberta, setBuscaAberta] = useState(false);
 
   useEffect(() => {
     function buscarNaoLidos() {
@@ -117,6 +119,17 @@ export default function Layout({ titulo = "Dashboard" }) {
     buscarNaoLidos();
     const intervalo = setInterval(buscarNaoLidos, 30000);
     return () => clearInterval(intervalo);
+  }, []);
+
+  useEffect(() => {
+    function aoTeclaGlobal(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setBuscaAberta(true);
+      }
+    }
+    window.addEventListener("keydown", aoTeclaGlobal);
+    return () => window.removeEventListener("keydown", aoTeclaGlobal);
   }, []);
 
   function aoSair() {
@@ -248,16 +261,18 @@ export default function Layout({ titulo = "Dashboard" }) {
             <h1 className="text-lg font-semibold text-white">{titulo}</h1>
           </div>
           <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input
-                placeholder="Buscar por membro, evento, pedido..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-16 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
-              />
+            <button
+              onClick={() => setBuscaAberta(true)}
+              className="relative w-full text-left"
+            >
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+              <div className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-16 py-2 text-sm text-slate-500 hover:bg-white/[0.07] transition-colors">
+                Buscar por membro, evento, pedido...
+              </div>
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 border border-white/10 rounded px-1.5 py-0.5">
                 Ctrl+K
               </span>
-            </div>
+            </button>
           </div>
           <div className="flex items-center gap-4">
             <button className="p-2 rounded-lg hover:bg-white/5 text-slate-300">
@@ -307,6 +322,8 @@ export default function Layout({ titulo = "Dashboard" }) {
           <Outlet />
         </main>
       </div>
+
+      <GlobalSearch aberto={buscaAberta} onFechar={() => setBuscaAberta(false)} />
     </div>
   );
 }
