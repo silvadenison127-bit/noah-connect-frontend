@@ -44,7 +44,7 @@ function CardSeguranca({ seguranca, carregando }) {
 
   if (carregando) {
     return (
-      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3">
         <p className="text-sm text-slate-500">Carregando segurança...</p>
       </div>
     );
@@ -52,7 +52,7 @@ function CardSeguranca({ seguranca, carregando }) {
 
   if (!seguranca || seguranca.status !== "real") {
     return (
-      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+      <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3">
         <p className="text-sm text-slate-500">Não foi possível avaliar a segurança.</p>
       </div>
     );
@@ -62,21 +62,21 @@ function CardSeguranca({ seguranca, carregando }) {
   const Icone = estilo.icone;
 
   return (
-    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
+    <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm px-3 py-2">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl ${estilo.bg} flex items-center justify-center ${estilo.cor}`}>
-            <Icone size={20} />
+          <div className={`w-9 h-9 rounded-lg ${estilo.bg} flex items-center justify-center ${estilo.cor}`}>
+            <Icone size={18} />
           </div>
           <div>
-            <p className="text-sm text-slate-400">Segurança do Sistema</p>
-            <p className={`text-lg font-bold ${estilo.cor}`}>{estilo.label}</p>
+            <p className="text-xs text-slate-400">Segurança do Sistema</p>
+            <p className={`text-base font-bold ${estilo.cor}`}>{estilo.label}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <p className="text-xs text-slate-500">Nota</p>
-            <p className="text-xl font-bold text-white tabular-nums">{seguranca.nota}/100</p>
+            <p className="text-[11px] text-slate-500">Nota</p>
+            <p className="text-lg font-bold text-white tabular-nums">{seguranca.nota}/100</p>
           </div>
           <button
             onClick={() => setExpandido((v) => !v)}
@@ -89,7 +89,7 @@ function CardSeguranca({ seguranca, carregando }) {
       </div>
 
       {expandido && (
-        <div className="mt-4 pt-4 border-t border-white/10 space-y-2.5">
+        <div className="mt-2 pt-2 border-t border-white/10 space-y-1.5">
           {seguranca.criterios.map((c) => {
             const s = ESTILO_STATUS_CRITERIO[c.status] || ESTILO_STATUS_CRITERIO.nao_validado;
             const IconeStatus = s.icone;
@@ -109,7 +109,6 @@ function CardSeguranca({ seguranca, carregando }) {
   );
 }
 
-// Cores por indicador inteligente (badge compacto)
 const CORES_INDICADOR = {
   emerald: { icone: "text-emerald-400", bg: "bg-emerald-500/10", valor: "text-emerald-400" },
   violet: { icone: "text-violet-400", bg: "bg-violet-500/10", valor: "text-violet-400" },
@@ -122,21 +121,20 @@ const CORES_INDICADOR = {
 function CardIndicadorInteligente({ icone: Icone, label, rotulo, cor, carregando }) {
   const c = CORES_INDICADOR[cor] || CORES_INDICADOR.slate;
   return (
-    <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4 flex flex-col gap-2 min-w-0">
+    <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-2.5 flex flex-col gap-1 min-w-0">
       <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-lg ${c.bg} flex items-center justify-center ${c.icone} shrink-0`}>
-          <Icone size={16} />
+        <div className={`w-7 h-7 rounded-lg ${c.bg} flex items-center justify-center ${c.icone} shrink-0`}>
+          <Icone size={14} />
         </div>
-        <p className="text-xs text-slate-400 truncate">{label}</p>
+        <p className="text-[11px] text-slate-400 truncate">{label}</p>
       </div>
-      <p className={`text-lg font-bold ${c.valor} truncate`}>
+      <p className={`text-base font-bold ${c.valor} truncate`}>
         {carregando ? "..." : rotulo}
       </p>
     </div>
   );
 }
 
-// Deriva a cor de cada indicador a partir do seu estado/classificação real.
 function corIgrejaSaudavel(kpi) {
   if (!kpi || kpi.estado !== "real") return "slate";
   if (kpi.valor >= 70) return "emerald";
@@ -220,13 +218,20 @@ export default function VisaoGeralMetrics() {
 
   const c = contagens ?? {};
 
+  const principais = [
+    { icone: Users, label: "Membros Ativos", kpi: c.membrosAtivos },
+    { icone: UserCog, label: "Líderes", kpi: c.lideres },
+    { icone: Church, label: "Células", kpi: c.celulas },
+    { icone: Wallet, label: "Saldo do Mês", kpi: c.saldoDoMes, moeda: true },
+    { icone: HeartHandshake, label: "Pedidos de Oração", kpi: c.pedidosOracao },
+    { icone: CalendarDays, label: "Eventos este Mês", kpi: c.eventosDoMes },
+    { icone: CalendarDays, label: "Próximos Eventos", kpi: c.proximosEventos },
+  ];
+
   const secundarios = [
     { icone: Church, label: "Ministérios", kpi: c.ministerios },
     { icone: GraduationCap, label: "Cursos Ativos", kpi: c.cursos },
     { icone: Layers, label: "Turmas", kpi: c.turmas },
-    { icone: CalendarDays, label: "Eventos este Mês", kpi: c.eventosDoMes },
-    { icone: CalendarDays, label: "Próximos Eventos", kpi: c.proximosEventos },
-    { icone: HeartHandshake, label: "Pedidos de Oração", kpi: c.pedidosOracao },
     { icone: Newspaper, label: "Notícias", kpi: c.noticias },
     { icone: Megaphone, label: "Comunicados", kpi: c.comunicados },
     { icone: BookOpen, label: "Estudos Bíblicos", kpi: c.estudosBiblicos },
@@ -237,24 +242,27 @@ export default function VisaoGeralMetrics() {
 
   if (erro) {
     return (
-      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 p-5 text-sm text-slate-400">
+      <div className="bg-[#0F0F1E] rounded-xl border border-white/10 p-3 text-sm text-slate-400">
         Não foi possível carregar a visão geral. Verifique sua conexão e recarregue.
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* 4 cards principais */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <CardEstatistica icone={Users} label="Membros Ativos" valor={exibir(c.membrosAtivos)} carregando={carregando} />
-        <CardEstatistica icone={UserCog} label="Líderes" valor={exibir(c.lideres)} carregando={carregando} />
-        <CardEstatistica icone={Church} label="Células" valor={exibir(c.celulas)} carregando={carregando} />
-        <CardEstatistica icone={Wallet} label="Saldo do Mês" valor={exibir(c.saldoDoMes, { moeda: true })} carregando={carregando} />
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        {principais.map((p) => (
+          <CardEstatistica
+            key={p.label}
+            icone={p.icone}
+            label={p.label}
+            valor={exibir(p.kpi, { moeda: p.moeda })}
+            carregando={carregando}
+          />
+        ))}
       </div>
 
-      {/* Indicadores inteligentes (Fase 2) — sempre com dado real ou "Aguardando dados" */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
         <CardIndicadorInteligente
           icone={HeartPulse} label="Igreja Saudável"
           rotulo={igrejaSaudavel?.rotulo ?? "..."} cor={corIgrejaSaudavel(igrejaSaudavel)}
@@ -287,10 +295,8 @@ export default function VisaoGeralMetrics() {
         />
       </div>
 
-      {/* Card de Segurança (detalhado, com critérios expansíveis) */}
       <CardSeguranca seguranca={seguranca} carregando={carregandoInteligentes} />
 
-      {/* Botão Ver mais */}
       <button
         onClick={() => setExpandido((v) => !v)}
         className="flex items-center gap-2 text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors"
@@ -300,7 +306,7 @@ export default function VisaoGeralMetrics() {
       </button>
 
       {expandido && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           {secundarios.map((s) => (
             <CardEstatistica
               key={s.label}
