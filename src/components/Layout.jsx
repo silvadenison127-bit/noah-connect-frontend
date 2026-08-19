@@ -108,12 +108,16 @@ export default function Layout({ titulo = "Dashboard" }) {
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const [erroFoto, setErroFoto] = useState(null);
   const [naoLidos, setNaoLidos] = useState(0);
+  const [pedidosPendentes, setPedidosPendentes] = useState(0);
   const [buscaAberta, setBuscaAberta] = useState(false);
 
   useEffect(() => {
     function buscarNaoLidos() {
       api.get("/comunicados/nao-lidos")
         .then((res) => setNaoLidos(res.data.total))
+        .catch(() => {});
+      api.get("/oracao/nao-respondidos")
+        .then((res) => setPedidosPendentes(res.data.total))
         .catch(() => {});
     }
     buscarNaoLidos();
@@ -211,6 +215,11 @@ export default function Layout({ titulo = "Dashboard" }) {
                     >
                       <div className="relative">
                         <Icone size={18} />
+                        {item.rota === "/oracao" && pedidosPendentes > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
+                            {pedidosPendentes > 9 ? "9+" : pedidosPendentes}
+                          </span>
+                        )}
                         {item.rota === "/comunicacoes" && naoLidos > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
                             {naoLidos > 9 ? "9+" : naoLidos}
