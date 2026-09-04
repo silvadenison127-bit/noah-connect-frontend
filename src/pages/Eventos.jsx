@@ -3,6 +3,35 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { Plus } from "lucide-react";
 
+/**
+ * Interpreta data_inicio como horario local, nao como UTC.
+ *
+ * eventos.data_inicio e TIMESTAMP SEM TIMEZONE e guarda o horario de Curitiba
+ * exatamente como o administrador digitou. O driver pg, ao serializar em JSON,
+ * anexa o sufixo "Z", e `new Date("...Z")` faz o navegador converter de UTC
+ * para o fuso local: 19:00 virava 16:00.
+ *
+ * A correcao remove o marcador de fuso da string antes de criar o Date. Sem
+ * ele, o JavaScript trata o valor como horario local, que e o que ele e.
+ *
+ * Nao subtraimos horas nem fixamos "-03:00": isso quebraria para quem abrir o
+ * painel de outro fuso, e voltaria a errar se o Brasil readotar horario de
+ * verao.
+ */
+function paraHorarioLocal(valor) {
+  if (!valor) return null;
+
+  if (typeof valor === "string") {
+    // "2026-09-10T19:00:00.000Z" e "2026-09-10 19:00:00+00" -> "2026-09-10T19:00:00"
+    const semFuso = valor
+      .replace(" ", "T")
+      .replace(/(\.\d+)?(Z|[+-]\d{2}:?\d{2})$/, "");
+    return new Date(semFuso);
+  }
+
+  return new Date(valor);
+}
+
 export default function Eventos() {
   const { usuario } = useAuth();
   const [eventos, setEventos] = useState([]);
@@ -96,7 +125,7 @@ export default function Eventos() {
           <p className="text-sm text-slate-500 p-5">Nenhum evento cadastrado ainda.</p>
         ) : (
           eventos.map((ev) => {
-            const data = new Date(ev.data_inicio);
+            const data = paraHorarioLocal(ev.data_inicio);
             return (
               <div key={ev.id} className="p-4 flex items-center gap-4 hover:bg-white/[0.02]">
                 <div className="w-14 h-14 rounded-xl bg-violet-500/10 flex flex-col items-center justify-center text-violet-400 shrink-0">
