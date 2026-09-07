@@ -14,6 +14,36 @@ import CardFrequenciaCultos from "../components/CardFrequenciaCultos";
 import CardDistribuicaoIdades from "../components/CardDistribuicaoIdades";
 import { useAuth } from "../context/AuthContext";
 
+/**
+ * Interpreta data_inicio como horario local, nao como UTC.
+ *
+ * eventos.data_inicio e TIMESTAMP SEM TIMEZONE e guarda o horario de Curitiba
+ * exatamente como o administrador digitou. O driver pg anexa o sufixo "Z" ao
+ * serializar em JSON, e new Date("...Z") faz o navegador converter de UTC para
+ * o fuso local: 21:00 aparecia como 18:00.
+ *
+ * Mesma correcao ja aplicada em Eventos.jsx (commit d6e79f7). O card de
+ * proximos eventos vive neste componente e por isso nao foi contemplado na
+ * ocasiao.
+ *
+ * Nao subtraimos horas nem fixamos "-03:00": isso quebraria para quem abrir o
+ * painel de outro fuso, e voltaria a errar se o Brasil readotar horario de
+ * verao.
+ */
+function paraHorarioLocal(valor) {
+  if (!valor) return null;
+
+  if (typeof valor === "string") {
+    // "2026-09-15T21:00:00.000Z" e "2026-09-15 21:00:00+00" -> "2026-09-15T21:00:00"
+    const semFuso = valor
+      .replace(" ", "T")
+      .replace(/(\.\d+)?(Z|[+-]\d{2}:?\d{2})$/, "");
+    return new Date(semFuso);
+  }
+
+  return new Date(valor);
+}
+
 const CORES_CELULA = ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#EDE9FE"];
 
 function Avatar({ nome, tamanho = 32 }) {
@@ -356,7 +386,7 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-2">
               {eventos.map((ev) => {
-                const data = new Date(ev.data_inicio);
+                const data = paraHorarioLocal(ev.data_inicio);
                 const dia = data.toLocaleDateString("pt-BR", { day: "2-digit" });
                 const mes = data.toLocaleDateString("pt-BR", { month: "short" }).toUpperCase().replace(".", "");
                 const amanha = new Date(); amanha.setDate(amanha.getDate() + 1);
