@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import RotaProtegida from "./components/RotaProtegida";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
+import RedefinirSenha from "./pages/RedefinirSenha";
 import Dashboard from "./pages/Dashboard";
 import Membros from "./pages/Membros";
 import Eventos from "./pages/Eventos";
@@ -28,6 +29,8 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* Publica: quem chega aqui vem do link do e-mail, sem sessao do painel. */}
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route
             element={
               <RotaProtegida>
