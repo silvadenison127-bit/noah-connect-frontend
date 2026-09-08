@@ -200,7 +200,10 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     setExcluindo(true);
     try {
       const ids = [...selecionados];
-      const res = await api.post("/membros/excluir-multiplos", { ids });
+      // O backend recusa com 400 se `confirmado` nao for exatamente true.
+      // A confirmacao do usuario acontece no modal acima; este campo e o
+      // contrato que o servico espera para aceitar uma exclusao em lote.
+      const res = await api.post("/membros/excluir-multiplos", { ids, confirmado: true });
       const qtd = res.data?.excluidos ?? ids.length;
       setMostrarConfirmacao(false);
       setSelecionados(new Set());
