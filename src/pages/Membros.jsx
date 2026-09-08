@@ -42,6 +42,14 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     senha: "",
   });
 
+  // Edição de um membro existente.
+  // `edicao` guarda o membro em edição (null = nenhum). O e-mail fica de fora
+  // porque a rota PUT /membros/:id não atualiza esse campo: alterá-lo exigiria
+  // tratar o login, o que está fora deste escopo.
+  const [edicao, setEdicao] = useState(null);
+  const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [erroEdicao, setErroEdicao] = useState(null);
+
   // Seleção em massa
   const [selecionados, setSelecionados] = useState(new Set());
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
@@ -85,6 +93,52 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
       setErroForm(err.response?.data?.erro || "Erro ao cadastrar membro.");
     } finally {
       setSalvando(false);
+    }
+  }
+
+  // ---- Edição ----
+  function iniciarEdicao(m) {
+    setErroEdicao(null);
+    setEdicao({
+      id: m.id,
+      nome: m.nome ?? "",
+      email: m.email ?? "",
+      telefone: m.telefone ?? "",
+      tipo: m.tipo ?? "membro",
+      ativo: m.ativo !== false,
+    });
+  }
+
+  function cancelarEdicao() {
+    if (salvandoEdicao) return;
+    setEdicao(null);
+    setErroEdicao(null);
+  }
+
+  function aoMudarCampoEdicao(e) {
+    const { name, value, type, checked } = e.target;
+    setEdicao((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  }
+
+  async function salvarEdicao(e) {
+    e.preventDefault();
+    if (!edicao) return;
+    setErroEdicao(null);
+    setSalvandoEdicao(true);
+    try {
+      await api.put(`/membros/${edicao.id}`, {
+        nome: edicao.nome,
+        telefone: edicao.telefone,
+        tipo: edicao.tipo,
+        ativo: edicao.ativo,
+      });
+      setEdicao(null);
+      setMensagemSucesso("Membro atualizado com sucesso.");
+      carregarMembros();
+    } catch (err) {
+      setErroEdicao(err.response?.data?.erro || "Erro ao atualizar membro.");
+    } finally {
+      setSalvandoEdicao(false);
     }
   }
 
@@ -311,13 +365,14 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
               <th className="px-5 py-3 font-medium">Telefone</th>
               <th className="px-5 py-3 font-medium">Tipo</th>
               <th className="px-5 py-3 font-medium">Status</th>
+              <th className="px-5 py-3 font-medium text-right">Ações</th>
             </tr>
           </thead>
           <tbody>
             {carregando ? (
-              <tr><td className="px-5 py-4 text-slate-500" colSpan={6}>Carregando...</td></tr>
+              <tr><td className="px-5 py-4 text-slate-500" colSpan={7}>Carregando...</td></tr>
             ) : membros.length === 0 ? (
-              <tr><td className="px-5 py-4 text-slate-500" colSpan={6}>Nenhum membro cadastrado ainda.</td></tr>
+              <tr><td className="px-5 py-4 text-slate-500" colSpan={7}>Nenhum membro cadastrado ainda.</td></tr>
             ) : (
               membros.map((m) => {
                 const ehUsuarioLogado = String(m.id) === usuarioLogadoId;
@@ -342,12 +397,105 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
                         {m.ativo ? "Ativo" : "Inativo"}
                       </span>
                     </td>
+                    <td className="px-5 py-3 text-right">
+                      <button
+                        onClick={() => iniciarEdicao(m)}
+                        title="Editar membro"
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+                      >
+                        Editar
+                      </button>
+                    </td>
                   </tr>
                 );
               })
             )}
           </tbody>
         </table>
+      )}
+
+      {edicao && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <form
+            onSubmit={salvarEdicao}
+            className="w-full max-w-md bg-[#0F0F1E] border border-white/10 rounded-2xl shadow-xl p-6 space-y-4"
+          >
+            <div>
+              <h3 className="text-white font-semibold text-base">Editar membro</h3>
+              <p className="text-xs text-slate-500 mt-1">{edicao.email}</p>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">Nome</label>
+              <input
+                name="nome"
+                required
+                value={edicao.nome}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">Telefone</label>
+              <input
+                name="telefone"
+                value={edicao.telefone}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">Tipo</label>
+              <select
+                name="tipo"
+                value={edicao.tipo}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              >
+                <option value="membro" className="bg-[#0F0F1E]">Membro</option>
+                <option value="lider" className="bg-[#0F0F1E]">Líder</option>
+                <option value="admin" className="bg-[#0F0F1E]">Admin</option>
+              </select>
+            </div>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="ativo"
+                checked={edicao.ativo}
+                onChange={aoMudarCampoEdicao}
+                className="h-4 w-4 accent-violet-500 cursor-pointer"
+              />
+              <span className="text-sm text-slate-300">Membro ativo</span>
+            </label>
+
+            {erroEdicao && (
+              <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/30 rounded-lg px-3 py-2">
+                {erroEdicao}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-3 pt-1">
+              <button
+                type="button"
+                onClick={cancelarEdicao}
+                disabled={salvandoEdicao}
+                className="text-sm font-semibold px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-colors disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={salvandoEdicao}
+                className="text-sm font-semibold px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:opacity-90 transition-opacity disabled:opacity-60"
+              >
+                {salvandoEdicao ? "Salvando..." : "Salvar alterações"}
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
       {mostrarConfirmacao && (
