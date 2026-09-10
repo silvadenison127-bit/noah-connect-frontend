@@ -38,6 +38,7 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     nome: "",
     email: "",
     telefone: "",
+    data_nascimento: "",
     tipo: "membro",
     senha: "",
   });
@@ -86,7 +87,7 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     setSalvando(true);
     try {
       await api.post("/membros", novo);
-      setNovo({ nome: "", email: "", telefone: "", tipo: "membro", senha: "" });
+      setNovo({ nome: "", email: "", telefone: "", data_nascimento: "", tipo: "membro", senha: "" });
       setMostrarForm(false);
       carregarMembros();
     } catch (err) {
@@ -305,6 +306,18 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
               <input
                 name="telefone"
                 value={novo.telefone}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Data de nascimento <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                type="date"
+                name="data_nascimento"
+                value={novo.data_nascimento}
                 onChange={aoMudarCampo}
                 className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
               />
