@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Calendar, CalendarDays, Church, Users2,
   HeartHandshake, Wallet, CircleDollarSign, Newspaper, Bell,
   FileBarChart2, Settings, Headset, Search, ChevronDown, Menu, LogOut, Camera,
-  Sparkles, BarChart3, MapPin, Moon, GraduationCap
+  Sparkles, BarChart3, MapPin, Moon, GraduationCap, Radio
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -30,6 +30,7 @@ const GRUPOS_MENU = [
   {
     titulo: "Operação",
     itens: [
+      { icone: Radio, nome: "Ao Vivo", rota: "/ao-vivo" },
       { icone: Church, nome: "Cultos", rota: "/cultos" },
       { icone: Calendar, nome: "Agenda", rota: "/agenda" },
       { icone: CalendarDays, nome: "Eventos", rota: "/eventos" },

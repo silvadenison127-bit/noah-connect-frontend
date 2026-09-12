@@ -22,6 +22,7 @@ import Cursos from "./pages/Cursos";
 import IANoah from "./pages/IANoah";
 import ExecutiveBI from "./pages/ExecutiveBI";
 import MapaIgreja from "./pages/MapaIgreja";
+import AoVivo from "./pages/AoVivo";
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/executive-bi" element={<ExecutiveBI />} />
             <Route path="/mapa" element={<MapaIgreja />} />
             <Route path="/membros" element={<Membros />} />
+            <Route path="/ao-vivo" element={<AoVivo />} />
             <Route path="/agenda" element={<Eventos />} />
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/oracao" element={<Oracao />} />
