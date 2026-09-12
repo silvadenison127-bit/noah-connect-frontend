@@ -14,6 +14,10 @@ export default function Oracao() {
   const [textoResposta, setTextoResposta] = useState("");
   const [enviandoResposta, setEnviandoResposta] = useState(false);
 
+  // Guarda o id em exclusão, não um booleano: assim apenas o botão clicado
+  // fica desabilitado, e os demais pedidos seguem utilizáveis.
+  const [excluindoId, setExcluindoId] = useState(null);
+
   function carregar() {
     setCarregando(true);
     const endpoint = usuario?.tipo === "admin" ? "/oracao" : "/oracao/meus";
@@ -67,6 +71,31 @@ export default function Oracao() {
     }
   }
 
+  /**
+   * Exclui um pedido definitivamente.
+   *
+   * A confirmação mostra um trecho do texto porque pedido de oração é conteúdo
+   * pessoal: quem apaga precisa ver o que está apagando, não só um "tem
+   * certeza?" genérico.
+   */
+  async function excluirPedido(pedido) {
+    const trecho = (pedido.pedido || "").slice(0, 60);
+    const confirmado = window.confirm(
+      `Excluir este pedido de oração?\n\n"${trecho}${(pedido.pedido || "").length > 60 ? "..." : ""}"\n\nEsta ação não pode ser desfeita.`
+    );
+    if (!confirmado) return;
+
+    setExcluindoId(pedido.id);
+    try {
+      await api.delete(`/oracao/${pedido.id}`);
+      carregar();
+    } catch (err) {
+      alert(err.response?.data?.erro || "Erro ao excluir pedido");
+    } finally {
+      setExcluindoId(null);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <h2 className="font-semibold text-white text-lg">Pedidos de Oração</h2>
@@ -109,15 +138,26 @@ export default function Oracao() {
                   </p>
                 </div>
                 {usuario?.tipo === "admin" ? (
-                  <select
-                    value={p.status}
-                    onChange={(e) => atualizarStatus(p.id, e.target.value)}
-                    className="text-xs bg-white/5 border border-white/10 text-slate-200 rounded-lg px-2 py-1 shrink-0"
-                  >
-                    <option value="em_oracao" className="bg-[#0F0F1E]">Em oração</option>
-                    <option value="respondido" className="bg-[#0F0F1E]">Respondido</option>
-                    <option value="encerrado" className="bg-[#0F0F1E]">Encerrado</option>
-                  </select>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <select
+                      value={p.status}
+                      onChange={(e) => atualizarStatus(p.id, e.target.value)}
+                      className="text-xs bg-white/5 border border-white/10 text-slate-200 rounded-lg px-2 py-1"
+                    >
+                      <option value="em_oracao" className="bg-[#0F0F1E]">Em oração</option>
+                      <option value="respondido" className="bg-[#0F0F1E]">Respondido</option>
+                      <option value="encerrado" className="bg-[#0F0F1E]">Encerrado</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => excluirPedido(p)}
+                      disabled={excluindoId === p.id}
+                      title="Excluir este pedido"
+                      className="text-xs text-slate-500 hover:text-rose-400 transition-colors disabled:opacity-50 px-2 py-1"
+                    >
+                      {excluindoId === p.id ? "Excluindo..." : "Excluir"}
+                    </button>
+                  </div>
                 ) : (
                   <span className="text-xs bg-violet-500/15 text-violet-300 font-medium px-2 py-1 rounded-full shrink-0 capitalize">
                     {p.status.replace("_", " ")}
