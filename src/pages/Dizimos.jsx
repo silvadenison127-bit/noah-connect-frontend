@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { Plus, Trash2, TrendingUp, TrendingDown } from "lucide-react";
+import DoacoesApp from "../components/DoacoesApp";
 
 export default function Dizimos() {
   const [lancamentos, setLancamentos] = useState([]);
@@ -226,6 +227,8 @@ export default function Dizimos() {
           </tbody>
         </table>
       </div>
+
+      <DoacoesApp />
     </div>
   );
 }
