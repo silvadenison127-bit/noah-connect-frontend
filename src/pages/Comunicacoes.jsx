@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { Plus, Trash2, Bell, Users, HeartHandshake, Megaphone } from "lucide-react";
@@ -37,7 +37,14 @@ export default function Comunicacoes() {
     setSalvando(true);
     try {
       const payload = { ...novo, alvo_id: novo.publico_alvo === "todos" ? null : novo.alvo_id };
-      await api.post("/comunicados", payload);
+      const { data } = await api.post("/comunicados", payload);
+      if (data?.app === "SUPABASE_SKIPPED_SEGMENTED") {
+        alert(
+          "Comunicado salvo no painel, mas nao foi enviado ao aplicativo. " +
+          "O aplicativo ainda nao recebe comunicados direcionados a uma celula ou ministerio. " +
+          "Para que os membros recebam no celular, envie como Para todos os membros."
+        );
+      }
       setNovo({ titulo: "", mensagem: "", publico_alvo: "todos", alvo_id: "" });
       setMostrarForm(false);
       carregar();
