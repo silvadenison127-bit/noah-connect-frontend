@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import RotaProtegida from "./components/RotaProtegida";
@@ -23,6 +23,7 @@ import IANoah from "./pages/IANoah";
 import ExecutiveBI from "./pages/ExecutiveBI";
 import MapaIgreja from "./pages/MapaIgreja";
 import AoVivo from "./pages/AoVivo";
+import Chat from "./pages/Chat";
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/mapa" element={<MapaIgreja />} />
             <Route path="/membros" element={<Membros />} />
             <Route path="/ao-vivo" element={<AoVivo />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/agenda" element={<Eventos />} />
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/oracao" element={<Oracao />} />
