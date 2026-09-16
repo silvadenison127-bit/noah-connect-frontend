@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import api from "../services/api";
+import DadosIgreja from "../components/DadosIgreja";
 import { useAuth } from "../context/AuthContext";
 import { Church, Lock, Shield, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -99,60 +100,7 @@ export default function Configuracoes() {
   return (
     <div className="space-y-4">
       <h2 className="font-semibold text-white text-lg">Configurações</h2>
-
-      {/* Dados da Igreja */}
-      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Church size={18} className="text-violet-400" />
-          <h3 className="font-semibold text-white">Dados da Igreja</h3>
-        </div>
-        <form onSubmit={salvarIgreja} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input
-            placeholder="Nome da igreja"
-            value={igreja.nome || ""}
-            onChange={(e) => setIgreja({ ...igreja, nome: e.target.value })}
-            disabled={usuario?.tipo !== "admin"}
-            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2 disabled:bg-white/[0.02] disabled:text-slate-500"
-          />
-          <input
-            placeholder="Endereço"
-            value={igreja.endereco || ""}
-            onChange={(e) => setIgreja({ ...igreja, endereco: e.target.value })}
-            disabled={usuario?.tipo !== "admin"}
-            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 sm:col-span-2 disabled:bg-white/[0.02] disabled:text-slate-500"
-          />
-          <input
-            placeholder="Telefone"
-            value={igreja.telefone || ""}
-            onChange={(e) => setIgreja({ ...igreja, telefone: e.target.value })}
-            disabled={usuario?.tipo !== "admin"}
-            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 disabled:bg-white/[0.02] disabled:text-slate-500"
-          />
-          <input
-            placeholder="Email de contato"
-            type="email"
-            value={igreja.email || ""}
-            onChange={(e) => setIgreja({ ...igreja, email: e.target.value })}
-            disabled={usuario?.tipo !== "admin"}
-            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50 disabled:bg-white/[0.02] disabled:text-slate-500"
-          />
-
-          {msgIgreja && (
-            <p className={`text-xs sm:col-span-2 px-3 py-2 rounded-lg ${msgIgreja.tipo === "sucesso" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"}`}>
-              {msgIgreja.texto}
-            </p>
-          )}
-
-          {usuario?.tipo === "admin" && (
-            <button
-              disabled={salvandoIgreja}
-              className="sm:col-span-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
-            >
-              {salvandoIgreja ? "Salvando..." : "Salvar Dados da Igreja"}
-            </button>
-          )}
-        </form>
-      </div>
+      <DadosIgreja />
 
       {/* Trocar Senha */}
       <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
