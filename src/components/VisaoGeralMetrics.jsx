@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
   Users, UserCog, Wallet, Church, HeartHandshake, CalendarDays,
   Newspaper, Megaphone, GraduationCap, BookOpen, Layers, ChevronDown,
@@ -220,15 +220,15 @@ export default function VisaoGeralMetrics() {
 
   const principais = [
     { icone: Users, label: "Membros Ativos", kpi: c.membrosAtivos },
-    { icone: UserCog, label: "Líderes", kpi: c.lideres },
     { icone: Church, label: "Células", kpi: c.celulas },
     { icone: Wallet, label: "Saldo do Mês", kpi: c.saldoDoMes, moeda: true },
     { icone: HeartHandshake, label: "Pedidos de Oração", kpi: c.pedidosOracao },
-    { icone: CalendarDays, label: "Eventos este Mês", kpi: c.eventosDoMes },
-    { icone: CalendarDays, label: "Próximos Eventos", kpi: c.proximosEventos },
   ];
 
   const secundarios = [
+    { icone: UserCog, label: "Líderes", kpi: c.lideres },
+    { icone: CalendarDays, label: "Eventos este Mês", kpi: c.eventosDoMes },
+    { icone: CalendarDays, label: "Próximos Eventos", kpi: c.proximosEventos },
     { icone: Church, label: "Ministérios", kpi: c.ministerios },
     { icone: GraduationCap, label: "Cursos Ativos", kpi: c.cursos },
     { icone: Layers, label: "Turmas", kpi: c.turmas },
@@ -249,8 +249,8 @@ export default function VisaoGeralMetrics() {
   }
 
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {principais.map((p) => (
           <CardEstatistica
             key={p.label}
@@ -262,7 +262,7 @@ export default function VisaoGeralMetrics() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <CardIndicadorInteligente
           icone={HeartPulse} label="Igreja Saudável"
           rotulo={igrejaSaudavel?.rotulo ?? "..."} cor={corIgrejaSaudavel(igrejaSaudavel)}

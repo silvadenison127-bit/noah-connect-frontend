@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis,
@@ -349,7 +349,7 @@ export default function Dashboard() {
 
       <VisaoGeralMetrics />
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-white text-sm">Crescimento de Membros</h3>
@@ -476,7 +476,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3 self-start">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-white text-sm">Resumo Financeiro</h3>
@@ -530,7 +530,7 @@ export default function Dashboard() {
 
         <CardSaudeIgreja saude={saudeDetalhada} carregando={carregando} />
 
-        <div className="lg:row-span-2 space-y-2">
+        <div className="lg:row-span-2 space-y-3">
           <CardAlertas alertas={alertas} carregando={carregando} />
           <CardRecomendacoes recomendacoes={recomendacoes} carregando={carregando} />
         </div>
@@ -540,7 +540,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <CardPedidosOracaoResumo />
         <CardFrequenciaCultos />
         <CardDistribuicaoIdades />
