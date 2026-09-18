@@ -112,6 +112,8 @@ export default function Layout({ titulo = "Dashboard" }) {
   const [naoLidos, setNaoLidos] = useState(0);
   const [pedidosPendentes, setPedidosPendentes] = useState(0);
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
+  const menuUsuarioRef = useRef(null);
 
   useEffect(() => {
     function buscarNaoLidos() {
@@ -142,6 +144,14 @@ export default function Layout({ titulo = "Dashboard" }) {
     logout();
     navigate("/login");
   }
+
+  useEffect(() => {
+    function aoClicarFora(e) {
+      if (menuUsuarioRef.current && !menuUsuarioRef.current.contains(e.target)) setMenuUsuarioAberto(false);
+    }
+    document.addEventListener("mousedown", aoClicarFora);
+    return () => document.removeEventListener("mousedown", aoClicarFora);
+  }, []);
 
   function abrirSuporte() {
     const mensagem = encodeURIComponent(
@@ -317,11 +327,44 @@ export default function Layout({ titulo = "Dashboard" }) {
                 onClick={abrirSeletorFoto}
                 carregando={enviandoFoto}
               />
-              <div className="text-sm">
-                <p className="font-medium leading-tight text-white">{usuario?.nome}</p>
-                <p className="text-xs text-slate-400 leading-tight capitalize">{usuario?.tipo}</p>
+              <div className="relative" ref={menuUsuarioRef}>
+                <button
+                  onClick={() => setMenuUsuarioAberto((v) => !v)}
+                  className="flex items-center gap-2 text-sm rounded-xl px-2 py-1 hover:bg-white/5"
+                >
+                  <div className="text-left">
+                    <p className="font-medium leading-tight text-white">{usuario?.nome}</p>
+                    <p className="text-xs text-slate-400 leading-tight capitalize">{usuario?.tipo}</p>
+                  </div>
+                  <ChevronDown size={16} className={`text-slate-400 transition-transform ${menuUsuarioAberto ? "rotate-180" : ""}`} />
+                </button>
+                {menuUsuarioAberto && (
+                  <div className="absolute right-0 mt-2 w-52 bg-[#0F0F1E] border border-white/10 rounded-xl shadow-xl py-1 z-50">
+                    <button
+                      onClick={() => { setMenuUsuarioAberto(false); abrirSeletorFoto(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
+                    >
+                      <Camera size={16} />
+                      Alterar foto
+                    </button>
+                    <button
+                      onClick={() => { setMenuUsuarioAberto(false); navigate("/configuracoes"); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
+                    >
+                      <Settings size={16} />
+                      Configurações
+                    </button>
+                    <div className="h-px bg-white/10 my-1" />
+                    <button
+                      onClick={() => { setMenuUsuarioAberto(false); aoSair(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-300 hover:bg-rose-500/10"
+                    >
+                      <LogOut size={16} />
+                      Sair
+                    </button>
+                  </div>
+                )}
               </div>
-              <ChevronDown size={16} className="text-slate-400" />
             </div>
           </div>
         </header>
