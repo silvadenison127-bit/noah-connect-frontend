@@ -530,7 +530,7 @@ export default function Dashboard() {
 
         <CardSaudeIgreja saude={saudeDetalhada} carregando={carregando} />
 
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3 [&>*]:flex-1">
           <CardAlertas alertas={alertas} carregando={carregando} />
           <CardRecomendacoes recomendacoes={recomendacoes} carregando={carregando} />
         </div>
