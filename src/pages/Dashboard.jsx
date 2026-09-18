@@ -530,12 +530,12 @@ export default function Dashboard() {
 
         <CardSaudeIgreja saude={saudeDetalhada} carregando={carregando} />
 
-        <div className="lg:row-span-2 space-y-3">
+        <div className="space-y-3">
           <CardAlertas alertas={alertas} carregando={carregando} />
           <CardRecomendacoes recomendacoes={recomendacoes} carregando={carregando} />
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4">
           <CardPrevisoes previsoes={previsoes} carregando={carregando} />
         </div>
       </div>
