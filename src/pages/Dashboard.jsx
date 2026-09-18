@@ -477,7 +477,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
-        <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3 self-start">
+        <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-white text-sm">Resumo Financeiro</h3>
             <span className="text-[10px] text-slate-500">Este mês</span>
@@ -498,7 +498,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3 self-start">
+        <div className="bg-[#0F0F1E] rounded-xl border border-white/10 shadow-sm p-3">
           <h3 className="font-semibold text-white text-sm mb-2">Membros por Célula</h3>
           <div className="flex items-center gap-3">
             <div className="w-24 h-24 relative shrink-0">

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 export default function CardEstatistica({ icone: Icone, label, valor, carregando }) {
   return (
@@ -9,7 +9,13 @@ export default function CardEstatistica({ icone: Icone, label, valor, carregando
         </div>
         <p className="text-sm text-slate-400">{label}</p>
       </div>
-      <p className="text-2xl font-bold text-white tabular-nums">
+      <p
+        className={
+          /^[0-9R]/.test(String(valor))
+            ? "text-2xl font-bold text-white tabular-nums"
+            : "text-sm text-slate-500"
+        }
+      >
         {carregando ? "..." : valor}
       </p>
     </div>
