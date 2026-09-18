@@ -189,8 +189,11 @@ export default function Layout({ titulo = "Dashboard" }) {
           {!menuRecolhido && (
             <p className="text-3xl font-bold italic -mt-1" style={{ fontFamily: "Georgia, serif" }}>noah</p>
           )}
+          {!menuRecolhido && (
+            <p className="text-[11px] tracking-[0.15em] text-violet-300/70 font-medium mt-0.5">Curitiba</p>
+          )}
         </div>
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-4">
+        <nav className="overflow-y-auto py-4 px-3 space-y-4">
           {GRUPOS_MENU.map((grupo) => (
             <div key={grupo.titulo}>
               {!menuRecolhido && (
