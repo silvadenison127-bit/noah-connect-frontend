@@ -112,6 +112,11 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
       telefone: m.telefone ?? "",
       tipo: m.tipo ?? "membro",
       ativo: m.ativo !== false,
+      endereco: m.endereco ?? "",
+      bairro: m.bairro ?? "",
+      cidade: m.cidade ?? "",
+      estado: m.estado ?? "",
+      cep: m.cep ?? "",
     });
   }
 
@@ -137,6 +142,11 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
         telefone: edicao.telefone,
         tipo: edicao.tipo,
         ativo: edicao.ativo,
+        endereco: edicao.endereco,
+        bairro: edicao.bairro,
+        cidade: edicao.cidade,
+        estado: edicao.estado,
+        cep: edicao.cep,
       });
       setEdicao(null);
       setMensagemSucesso("Membro atualizado com sucesso.");
@@ -522,6 +532,66 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
               <input
                 name="telefone"
                 value={edicao.telefone}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Endereço <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="endereco"
+                placeholder="Rua e número"
+                value={edicao.endereco}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Bairro <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="bairro"
+                placeholder="Bairro"
+                value={edicao.bairro}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Cidade <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="cidade"
+                placeholder="Cidade"
+                value={edicao.cidade}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Estado <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="estado"
+                placeholder="PR"
+                value={edicao.estado}
+                onChange={aoMudarCampoEdicao}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                CEP <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="cep"
+                placeholder="00000-000"
+                value={edicao.cep}
                 onChange={aoMudarCampoEdicao}
                 className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
               />
