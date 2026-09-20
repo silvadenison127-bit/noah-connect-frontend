@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { Plus, Users, Trash2, Pencil, X } from "lucide-react";
@@ -10,7 +10,7 @@ export default function Celulas() {
   const [carregando, setCarregando] = useState(true);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
-  const [novo, setNovo] = useState({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "" });
+  const [novo, setNovo] = useState({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "" });
   const [salvando, setSalvando] = useState(false);
 
   const [celulaMembrosId, setCelulaMembrosId] = useState(null);
@@ -32,7 +32,7 @@ export default function Celulas() {
 
   function abrirNovo() {
     setEditandoId(null);
-    setNovo({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "" });
+    setNovo({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "" });
     setMostrarForm(true);
   }
 
@@ -44,6 +44,8 @@ export default function Celulas() {
       dia_semana: celula.dia_semana || "",
       horario: celula.horario || "",
       endereco: celula.endereco || "",
+      bairro: celula.bairro || "",
+      cidade: celula.cidade || "",
     });
     setMostrarForm(true);
   }
@@ -165,6 +167,18 @@ export default function Celulas() {
             placeholder="Endereço"
             value={novo.endereco}
             onChange={(e) => setNovo({ ...novo, endereco: e.target.value })}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <input
+            placeholder="Bairro"
+            value={novo.bairro}
+            onChange={(e) => setNovo({ ...novo, bairro: e.target.value })}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <input
+            placeholder="Cidade"
+            value={novo.cidade}
+            onChange={(e) => setNovo({ ...novo, cidade: e.target.value })}
             className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <div className="sm:col-span-2 flex gap-2">
