@@ -10,7 +10,7 @@ export default function Celulas() {
   const [carregando, setCarregando] = useState(true);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
-  const [novo, setNovo] = useState({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "" });
+  const [novo, setNovo] = useState({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "", estado: "", cep: "" });
   const [salvando, setSalvando] = useState(false);
 
   const [celulaMembrosId, setCelulaMembrosId] = useState(null);
@@ -32,7 +32,7 @@ export default function Celulas() {
 
   function abrirNovo() {
     setEditandoId(null);
-    setNovo({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "" });
+    setNovo({ nome: "", lider_id: "", dia_semana: "", horario: "", endereco: "", bairro: "", cidade: "", estado: "", cep: "" });
     setMostrarForm(true);
   }
 
@@ -46,6 +46,8 @@ export default function Celulas() {
       endereco: celula.endereco || "",
       bairro: celula.bairro || "",
       cidade: celula.cidade || "",
+      estado: celula.estado || "",
+      cep: celula.cep || "",
     });
     setMostrarForm(true);
   }
@@ -179,6 +181,18 @@ export default function Celulas() {
             placeholder="Cidade"
             value={novo.cidade}
             onChange={(e) => setNovo({ ...novo, cidade: e.target.value })}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <input
+            placeholder="Estado (ex: SC)"
+            value={novo.estado}
+            onChange={(e) => setNovo({ ...novo, estado: e.target.value })}
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
+          />
+          <input
+            placeholder="CEP"
+            value={novo.cep}
+            onChange={(e) => setNovo({ ...novo, cep: e.target.value })}
             className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <div className="sm:col-span-2 flex gap-2">
