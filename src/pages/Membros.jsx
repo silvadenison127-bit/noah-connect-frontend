@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+﻿import React, { useEffect, useState, useRef, useMemo } from "react";
 import api from "../services/api";
 
 // Decodifica o payload de um JWT (base64url) de forma segura
@@ -41,6 +41,11 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     data_nascimento: "",
     tipo: "membro",
     senha: "",
+    endereco: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    cep: "",
   });
 
   // Edição de um membro existente.
@@ -87,7 +92,7 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
     setSalvando(true);
     try {
       await api.post("/membros", novo);
-      setNovo({ nome: "", email: "", telefone: "", data_nascimento: "", tipo: "membro", senha: "" });
+      setNovo({ nome: "", email: "", telefone: "", data_nascimento: "", tipo: "membro", senha: "", endereco: "", bairro: "", cidade: "", estado: "", cep: "" });
       setMostrarForm(false);
       carregarMembros();
     } catch (err) {
@@ -318,6 +323,66 @@ export default function Membros({ usuarioLogadoId: usuarioLogadoIdProp } = {}) {
                 type="date"
                 name="data_nascimento"
                 value={novo.data_nascimento}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Endereço <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="endereco"
+                placeholder="Rua e número"
+                value={novo.endereco}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Bairro <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="bairro"
+                placeholder="Bairro"
+                value={novo.bairro}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Cidade <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="cidade"
+                placeholder="Cidade"
+                value={novo.cidade}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                Estado <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="estado"
+                placeholder="PR"
+                value={novo.estado}
+                onChange={aoMudarCampo}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-300 mb-1 block">
+                CEP <span className="text-slate-500">(opcional)</span>
+              </label>
+              <input
+                name="cep"
+                placeholder="00000-000"
+                value={novo.cep}
                 onChange={aoMudarCampo}
                 className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
               />
