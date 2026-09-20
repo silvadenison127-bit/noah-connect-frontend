@@ -54,9 +54,7 @@ const GRUPOS_MENU = [
   {
     titulo: "Estratégia",
     itens: [
-      // Mapa da Igreja: tela ainda sem mapa real (grade simulada e botoes
-      // desativados). Fica fora do menu ate ter enderecos cadastrados e
-      // integracao de mapas. A rota e o arquivo continuam no projeto.
+      { icone: MapPin, nome: "Mapa da Igreja", rota: "/mapa" },
       { icone: FileBarChart2, nome: "Relatórios", rota: "/relatorios" },
     ],
   },
