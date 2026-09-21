@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import api from "../services/api";
-import { MessageSquare, Send, CheckCircle, RotateCcw } from "lucide-react";
+import { MessageSquare, Send, CheckCircle, RotateCcw, Trash2, Circle, X } from "lucide-react";
 
 /**
  * Atendimento do chat dos membros.
@@ -42,6 +42,9 @@ export default function Chat() {
   const [texto, setTexto] = useState("");
   const [carregando, setCarregando] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const [modoSelecao, setModoSelecao] = useState(false);
+  const [selecao, setSelecao] = useState([]);
+  const [excluindo, setExcluindo] = useState(false);
   const fimDaLista = useRef(null);
 
   const carregarConversas = useCallback(async (status) => {
@@ -114,6 +117,43 @@ export default function Chat() {
       alert(mensagemDeErro(err, "Erro ao enviar mensagem"));
     } finally {
       setEnviando(false);
+    }
+  }
+
+  // Trocar de conversa sempre limpa a selecao.
+  useEffect(() => {
+    setModoSelecao(false);
+    setSelecao([]);
+  }, [selecionada?.id]);
+
+  function alternarSelecao(id) {
+    setSelecao((atual) => (atual.includes(id) ? atual.filter((x) => x !== id) : [...atual, id]));
+  }
+
+  function selecionarTodas() {
+    setSelecao(selecao.length === mensagens.length ? [] : mensagens.map((m) => m.id));
+  }
+
+  function cancelarSelecao() {
+    setModoSelecao(false);
+    setSelecao([]);
+  }
+
+  async function excluirSelecionadas() {
+    if (!selecionada || !selecao.length || excluindo) return;
+    const ids = selecao;
+    const descricao = ids.length === 1 ? "1 mensagem" : ids.length + " mensagens";
+    if (!window.confirm("Excluir " + descricao + " do painel? O membro continuar\u00e1 vendo no aplicativo.")) return;
+    setExcluindo(true);
+    try {
+      await api.post(ROTA + "/" + selecionada.id + "/mensagens/ocultar", { ids });
+      setMensagens((lista) => lista.filter((m) => !ids.includes(m.id)));
+      cancelarSelecao();
+      carregarConversas(filtro);
+    } catch (err) {
+      alert(mensagemDeErro(err, "Erro ao excluir mensagens"));
+    } finally {
+      setExcluindo(false);
     }
   }
 
@@ -199,6 +239,23 @@ export default function Chat() {
                   <p className="font-semibold truncate">{selecionada.membro_nome}</p>
                   <p className="text-xs text-gray-500 truncate">{selecionada.subject}</p>
                 </div>
+                {mensagens.length > 0 && (modoSelecao ? (
+                  <div className="ml-auto flex items-center gap-2">
+                    <button onClick={selecionarTodas} className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">
+                      {selecao.length === mensagens.length ? "Desmarcar todas" : "Selecionar todas"}
+                    </button>
+                    <button onClick={excluirSelecionadas} disabled={!selecao.length || excluindo} className="shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50">
+                      <Trash2 size={14} /> {excluindo ? "Excluindo..." : "Excluir (" + selecao.length + ")"}
+                    </button>
+                    <button onClick={cancelarSelecao} className="shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">
+                      <X size={14} /> Cancelar
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => setModoSelecao(true)} className="ml-auto shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200">
+                    <Trash2 size={14} /> Excluir mensagens
+                  </button>
+                ))}
                 {selecionada.status === "open" ? (
                   <button
                     onClick={() => alterarStatus("closed")}
@@ -223,10 +280,16 @@ export default function Chat() {
                   mensagens.map((msg) => {
                     const daIgreja = msg.sender_role !== "member";
                     return (
-                      <div key={msg.id} className={`flex ${daIgreja ? "justify-end" : "justify-start"}`}>
+                      <div key={msg.id} onClick={modoSelecao ? () => alternarSelecao(msg.id) : undefined} className={(modoSelecao ? "cursor-pointer select-none " : "") + `flex ${daIgreja ? "justify-end" : "justify-start"}`}>
                         <div
                           className={`max-w-[75%] rounded-2xl px-4 py-2 ${daIgreja ? "bg-purple-600 text-white" : "bg-gray-100 dark:bg-gray-800"}`}
                         >
+                          {modoSelecao && (
+                            <span className="flex items-center gap-1 text-[10px] mb-1 opacity-80">
+                              {selecao.includes(msg.id) ? <CheckCircle size={14} /> : <Circle size={14} />}
+                              {selecao.includes(msg.id) ? "Selecionada" : "Selecionar"}
+                            </span>
+                          )}
                           <p className="text-sm whitespace-pre-wrap break-words">{msg.body}</p>
                           <p className={`text-[10px] mt-1 ${daIgreja ? "text-purple-200" : "text-gray-400"}`}>
                             {formatarHora(msg.created_at)}
