@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import api from "../services/api";
 import { MessageSquare, Send, CheckCircle, RotateCcw } from "lucide-react";
 
@@ -84,7 +84,7 @@ export default function Chat() {
   }, [filtro, selecionada, carregarConversas, carregarMensagens]);
 
   useEffect(() => {
-    fimDaLista.current?.scrollIntoView({ behavior: "smooth" });
+    fimDaLista.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [mensagens]);
 
   async function abrirConversa(conversa) {
