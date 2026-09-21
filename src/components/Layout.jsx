@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Users, Calendar, CalendarDays, Church, Users2,
@@ -111,6 +111,7 @@ export default function Layout({ titulo = "Dashboard" }) {
   const [erroFoto, setErroFoto] = useState(null);
   const [naoLidos, setNaoLidos] = useState(0);
   const [pedidosPendentes, setPedidosPendentes] = useState(0);
+  const [chatNaoLidos, setChatNaoLidos] = useState(0);
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
   const menuUsuarioRef = useRef(null);
@@ -122,6 +123,9 @@ export default function Layout({ titulo = "Dashboard" }) {
         .catch(() => {});
       api.get("/oracao/nao-respondidos")
         .then((res) => setPedidosPendentes(res.data.total))
+        .catch(() => {});
+      api.get("/chat/nao-lidas")
+        .then((res) => setChatNaoLidos(res.data.total))
         .catch(() => {});
     }
     buscarNaoLidos();
@@ -233,6 +237,11 @@ export default function Layout({ titulo = "Dashboard" }) {
                         {item.rota === "/oracao" && pedidosPendentes > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
                             {pedidosPendentes > 9 ? "9+" : pedidosPendentes}
+                          </span>
+                        )}
+                        {item.rota === "/chat" && chatNaoLidos > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
+                            {chatNaoLidos > 9 ? "9+" : chatNaoLidos}
                           </span>
                         )}
                         {item.rota === "/comunicacoes" && naoLidos > 0 && (
