@@ -117,17 +117,6 @@ export default function ExecutiveBI() {
         <CardDistribuicaoIdades />
       </div>
 
-      {/* ESTADO VAZIO ELEGANTE */}
-      <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm px-6 py-8 flex flex-col items-center text-center gap-2">
-        <Database size={26} className="text-slate-600 mb-1" />
-        <h3 className="text-sm font-semibold text-slate-300">Nenhum dado disponivel no momento</h3>
-        <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
-          Os indicadores serao preenchidos automaticamente conforme os modulos da igreja forem sendo
-          utilizados. Assim que houver movimentacao de membros, eventos, financas, celulas, cursos e
-          demais modulos, o Executive BI sera atualizado automaticamente.
-        </p>
-      </div>
-
       {/* RODAPE INFORMATIVO */}
       <div className="text-center pt-1 space-y-0.5">
         <p className="text-[10px] text-slate-500 font-medium">Fonte dos dados</p>
