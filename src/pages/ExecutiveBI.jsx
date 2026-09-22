@@ -9,6 +9,9 @@ import {
   GraduationCap, Sparkles, Circle, RefreshCw, Download, MapPin, Database,
 } from "lucide-react";
 import CardIndicador from "../components/CardIndicador";
+import VisaoGeralMetrics from "../components/VisaoGeralMetrics";
+import CardFrequenciaCultos from "../components/CardFrequenciaCultos";
+import CardDistribuicaoIdades from "../components/CardDistribuicaoIdades";
 
 const tooltipStyle = {
   contentStyle: { background: "#15152A", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 11 },
@@ -122,83 +125,12 @@ export default function ExecutiveBI() {
         </div>
       </div>
 
-      {/* GRID DE KPIS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-3">
-        {KPIS.map((kpi) => (
-          <CardIndicador
-            key={kpi.label}
-            icone={kpi.icone}
-            label={kpi.label}
-            valor={kpi.valor}
-            variacao={kpi.variacao}
-            cor={kpi.cor}
-            sparkline={kpi.sparkline}
-          />
-        ))}
-      </div>
+      {/* INDICADORES REAIS */}
+      <VisaoGeralMetrics />
 
-      {/* GRID ANALYTICS - 3 GRAFICOS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4">
-          <h3 className="text-xs font-semibold text-slate-300 mb-2">Crescimento</h3>
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={CRESCIMENTO_MOCK}>
-                <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="mes" tick={{ fontSize: 10, fill: "#64748B" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748B" }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 10]} />
-                <Tooltip {...tooltipStyle} />
-                <Line type="monotone" dataKey="membros" stroke="#A78BFA" strokeWidth={2.5} dot={{ r: 3, fill: "#A78BFA" }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4">
-          <h3 className="text-xs font-semibold text-slate-300 mb-2">Financeiro</h3>
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={FINANCEIRO_MOCK}>
-                <defs>
-                  <linearGradient id="gradFinanceiroBI" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#34D399" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#34D399" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="mes" tick={{ fontSize: 10, fill: "#64748B" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748B" }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 10]} />
-                <Tooltip {...tooltipStyle} />
-                <Area type="monotone" dataKey="saldo" stroke="#34D399" strokeWidth={2.5} fill="url(#gradFinanceiroBI)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4">
-          <h3 className="text-xs font-semibold text-slate-300 mb-2">Retencao</h3>
-          <div className="h-[250px] flex items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={RETENCAO_MOCK} dataKey="valor" innerRadius={55} outerRadius={80} paddingAngle={2} startAngle={90} endAngle={-270}>
-                  {RETENCAO_MOCK.map((_, i) => (<Cell key={i} fill={CORES_RETENCAO[i]} stroke="none" />))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-bold text-white">0%</span>
-              <span className="text-[10px] text-slate-500">Retencao</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* GRID OPERACIONAL */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <CardIndicador icone={HeartHandshake} label="Ministerios" valor="0 ativos" cor="cyan" />
-        <CardIndicador icone={CalendarDays} label="Eventos" valor="0 este mes" cor="amber" />
-        <CardIndicador icone={ClipboardCheck} label="Frequencia" valor="0%" cor="violet" />
-        <CardIndicador icone={Sparkles} label="IA Insights" valor="0 insights" cor="violet" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <CardFrequenciaCultos />
+        <CardDistribuicaoIdades />
       </div>
 
       {/* ESTADO VAZIO ELEGANTE */}
