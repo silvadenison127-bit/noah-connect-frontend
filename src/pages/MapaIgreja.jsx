@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, LayersControl, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Home, RefreshCw } from "lucide-react";
@@ -124,10 +124,27 @@ export default function MapaIgreja() {
           </div>
         ) : (
           <MapContainer center={CENTRO_PADRAO} zoom={12} keyboard={false} style={{ height: "520px", width: "100%" }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+            <LayersControl position="topright">
+              <LayersControl.BaseLayer checked name="Mapa">
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name={"Sat\u00e9lite"}>
+                <TileLayer
+                  attribution='Imagens &copy; Esri'
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  maxNativeZoom={19}
+                  maxZoom={20}
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.Overlay name="Nomes das ruas">
+                <TileLayer
+                  url="https://stamen-tiles.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}.png"
+                />
+              </LayersControl.Overlay>
+            </LayersControl>
             <AjustarEnquadramento pontos={pontos} />
 
             {dados.membros.map((m) => (
