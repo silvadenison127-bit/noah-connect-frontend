@@ -123,7 +123,7 @@ export default function MapaIgreja() {
             </p>
           </div>
         ) : (
-          <MapContainer center={CENTRO_PADRAO} zoom={12} keyboard={false} style={{ height: "520px", width: "100%" }}>
+          <MapContainer center={CENTRO_PADRAO} zoom={12} keyboard={false} style={{ height: "calc(100vh - 300px)", minHeight: "420px", width: "100%" }}>
             <LayersControl position="topright">
               <LayersControl.BaseLayer checked name="Mapa">
                 <TileLayer
