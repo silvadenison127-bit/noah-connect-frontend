@@ -135,8 +135,8 @@ export default function MapaIgreja() {
                 <TileLayer
                   attribution='Imagens &copy; Esri'
                   url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                  maxNativeZoom={19}
-                  maxZoom={20}
+                  maxNativeZoom={18}
+                  maxZoom={19}
                 />
               </LayersControl.BaseLayer>
               <LayersControl.Overlay name="Nomes das ruas">
