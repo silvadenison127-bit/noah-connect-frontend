@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import {
   ResponsiveContainer, LineChart, Line, AreaChart, Area,
   CartesianGrid, XAxis, YAxis, Tooltip, PieChart, Pie, Cell,
@@ -90,10 +90,6 @@ export default function ExecutiveBI() {
           </div>
 
           <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <span className="text-[10px] font-medium text-violet-300 bg-violet-500/15 border border-violet-500/30 rounded-full px-2.5 py-0.5">
-              Modo Demonstracao
-            </span>
-
             <div className="flex items-center gap-1.5 flex-wrap justify-end">
               {BOTOES_HERO.map((b) => {
                 const Icone = b.icone;
@@ -106,18 +102,6 @@ export default function ExecutiveBI() {
                     <Icone size={12} />
                     {b.label}
                   </button>
-                );
-              })}
-              {BADGES_STATUS.map((b) => {
-                const Icone = b.icone;
-                return (
-                  <span
-                    key={b.texto}
-                    className="flex items-center gap-1.5 text-[10px] text-slate-400 bg-white/5 border border-white/10 rounded-full px-2.5 py-1"
-                  >
-                    <Icone size={10} className={b.cor} />
-                    {b.texto}
-                  </span>
                 );
               })}
             </div>
