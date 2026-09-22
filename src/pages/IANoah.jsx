@@ -48,7 +48,7 @@ export default function IANoah() {
   }, []);
 
   useEffect(() => {
-    fimDaListaRef.current?.scrollIntoView({ behavior: "smooth" });
+    fimDaListaRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [mensagens]);
 
   async function enviarPergunta(textoPergunta) {
