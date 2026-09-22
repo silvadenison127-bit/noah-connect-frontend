@@ -9,7 +9,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import {
-  Plus, GraduationCap, Pencil, Trash2, Users, Search, Check, X as XIcon,
+  Plus, GraduationCap, Pencil, Trash2, Power, Users, Search, Check, X as XIcon,
   Clock, FileText, BarChart3, BookOpen, Heart, Shield, UserCheck, Calendar,
   Download, FileSpreadsheet,
 } from "lucide-react";
@@ -75,6 +75,7 @@ export default function Cursos() {
   const [mostrarFormCurso, setMostrarFormCurso] = useState(false);
   const [novoCurso, setNovoCurso] = useState({ nome: "", descricao: "" });
   const [salvandoCurso, setSalvandoCurso] = useState(false);
+  const [editandoCursoId, setEditandoCursoId] = useState(null);
 
   const [turmas, setTurmas] = useState([]);
   const [carregandoTurmas, setCarregandoTurmas] = useState(true);
@@ -135,12 +136,14 @@ export default function Cursos() {
     e.preventDefault();
     setSalvandoCurso(true);
     try {
-      await api.post("/cursos", novoCurso);
+      if (editandoCursoId) await api.put("/cursos/" + editandoCursoId, novoCurso);
+      else await api.post("/cursos", novoCurso);
+      setEditandoCursoId(null);
       setMostrarFormCurso(false);
       setNovoCurso({ nome: "", descricao: "" });
       carregarCursos();
     } catch (err) {
-      alert(err.response?.data?.erro || "Erro ao criar curso");
+      alert(err.response?.data?.erro || "Erro ao salvar curso");
     } finally {
       setSalvandoCurso(false);
     }
@@ -212,6 +215,35 @@ export default function Cursos() {
       alert(err.response?.data?.erro || "Erro ao salvar turma");
     } finally {
       setSalvandoTurma(false);
+    }
+  }
+
+  function editarCurso(c) {
+    setEditandoCursoId(c.id);
+    setNovoCurso({ nome: c.nome || "", descricao: c.descricao || "" });
+    setMostrarFormCurso(true);
+  }
+
+  async function alternarAtivoCurso(c) {
+    const acao = c.ativo === false ? "reativar" : "desativar";
+    if (!window.confirm("Deseja " + acao + " o curso " + c.nome + "?")) return;
+    try {
+      await api.put("/cursos/" + c.id, { ativo: c.ativo === false });
+      carregarCursos();
+      carregarDashboard();
+    } catch (err) {
+      alert(err.response?.data?.erro || "Erro ao alterar o curso");
+    }
+  }
+
+  async function removerCurso(c) {
+    if (!window.confirm("Excluir o curso " + c.nome + "? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.")) return;
+    try {
+      await api.delete("/cursos/" + c.id);
+      carregarCursos();
+      carregarDashboard();
+    } catch (err) {
+      alert(err.response?.data?.erro || "Erro ao excluir o curso");
     }
   }
 
@@ -455,7 +487,7 @@ export default function Cursos() {
         <div className="flex items-center gap-2">
           {ehAdmin && abaAtiva === "dashboard" && (
             <button
-              onClick={() => setMostrarFormCurso(true)}
+              onClick={() => { setEditandoCursoId(null); setNovoCurso({ nome: "", descricao: "" }); setMostrarFormCurso(true); }}
               className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
             >
               <Plus size={16} /> Novo Curso
@@ -517,7 +549,7 @@ export default function Cursos() {
             </button>
             <button
               type="button"
-              onClick={() => setMostrarFormCurso(false)}
+              onClick={() => { setMostrarFormCurso(false); setEditandoCursoId(null); setNovoCurso({ nome: "", descricao: "" }); }}
               className="px-4 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5"
             >
               Cancelar
@@ -550,17 +582,26 @@ export default function Cursos() {
               {cursos.map((c) => {
                 const Icone = ICONE_CURSO_PADRAO[c.nome] || GraduationCap;
                 return (
+                  <div key={c.id} className={"relative" + (c.ativo === false ? " opacity-60" : "")}>
                   <button
-                    key={c.id}
                     onClick={() => irParaTurmasDoCurso(c.id)}
-                    className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4 flex flex-col items-center gap-2 hover:border-violet-500/40 hover:bg-white/[0.03] transition-colors"
+                    className="w-full h-full bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4 flex flex-col items-center gap-2 hover:border-violet-500/40 hover:bg-white/[0.03] transition-colors"
                   >
                     <div className="w-11 h-11 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
                       <Icone size={20} />
                     </div>
                     <p className="text-xs font-medium text-slate-200 text-center leading-tight">{c.nome}</p>
                     <span className="text-[10px] text-slate-500">{c.total_turmas} turma{c.total_turmas === "1" ? "" : "s"}</span>
+                    {c.ativo === false && <span className="text-[10px] font-medium text-amber-400">Inativo</span>}
                   </button>
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    <button type="button" title="Editar" onClick={() => editarCurso(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"><Pencil size={13} /></button>
+                    <button type="button" title={c.ativo === false ? "Reativar" : "Desativar"} onClick={() => alternarAtivoCurso(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-white/10"><Power size={13} /></button>
+                    {Number(c.total_turmas) === 0 && (
+                      <button type="button" title="Excluir" onClick={() => removerCurso(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/10"><Trash2 size={13} /></button>
+                    )}
+                  </div>
+                  </div>
                 );
               })}
             </div>
