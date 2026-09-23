@@ -40,8 +40,8 @@ export default function Comunicacoes() {
       const { data } = await api.post("/comunicados", payload);
       if (data?.app === "SUPABASE_SKIPPED_SEGMENTED") {
         alert(
-          "Comunicado salvo no painel, mas nao foi enviado ao aplicativo. " +
-          "O aplicativo ainda nao recebe comunicados direcionados a uma celula ou ministerio. " +
+          "Comunicado salvo no painel, mas não foi enviado ao aplicativo. " +
+          "O aplicativo ainda não recebe comunicados direcionados a uma célula ou ministério. " +
           "Para que os membros recebam no celular, envie como Para todos os membros."
         );
       }

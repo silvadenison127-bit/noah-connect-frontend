@@ -51,7 +51,7 @@ export default function MapaIgreja() {
       const r = await api.get("/mapa/pontos");
       setDados(r.data);
     } catch {
-      setErro("Nao foi possivel carregar o mapa. Verifique sua conexao.");
+      setErro("Não foi possível carregar o mapa. Verifique sua conexão.");
     } finally {
       setCarregando(false);
     }

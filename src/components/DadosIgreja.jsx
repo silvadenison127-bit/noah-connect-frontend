@@ -17,11 +17,11 @@ import { Save, Plus, Trash2, Clock } from "lucide-react";
 const DIAS = [
   { valor: 0, nome: "Domingo" },
   { valor: 1, nome: "Segunda" },
-  { valor: 2, nome: "Terca" },
+  { valor: 2, nome: "Terça" },
   { valor: 3, nome: "Quarta" },
   { valor: 4, nome: "Quinta" },
   { valor: 5, nome: "Sexta" },
-  { valor: 6, nome: "Sabado" },
+  { valor: 6, nome: "Sábado" },
 ];
 
 const CULTO_VAZIO = {
@@ -89,7 +89,7 @@ export default function DadosIgreja() {
   async function adicionarCulto(e) {
     e.preventDefault();
     if (!novoCulto.name.trim() || !novoCulto.start_time) {
-      return alert("Informe o nome e o horario do culto.");
+      return alert("Informe o nome e o horário do culto.");
     }
     try {
       const { data } = await api.post("/igreja/cultos", novoCulto);
@@ -97,7 +97,7 @@ export default function DadosIgreja() {
       setNovoCulto(CULTO_VAZIO);
       setMostrarForm(false);
     } catch (err) {
-      alert(mensagemDeErro(err, "Erro ao cadastrar o horario"));
+      alert(mensagemDeErro(err, "Erro ao cadastrar o horário"));
     }
   }
 
@@ -108,7 +108,7 @@ export default function DadosIgreja() {
       });
       setCultos((atuais) => atuais.map((c) => (c.id === data.id ? data : c)));
     } catch (err) {
-      alert(mensagemDeErro(err, "Erro ao alterar o horario"));
+      alert(mensagemDeErro(err, "Erro ao alterar o horário"));
     }
   }
 
@@ -118,7 +118,7 @@ export default function DadosIgreja() {
       await api.delete(`/igreja/cultos/${culto.id}`);
       setCultos((atuais) => atuais.filter((c) => c.id !== culto.id));
     } catch (err) {
-      alert(mensagemDeErro(err, "Erro ao remover o horario"));
+      alert(mensagemDeErro(err, "Erro ao remover o horário"));
     }
   }
 
@@ -133,7 +133,7 @@ export default function DadosIgreja() {
       <form onSubmit={salvarIgreja} className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
         <h2 className="font-semibold text-white mb-1">Dados da igreja</h2>
         <p className="text-xs text-slate-400 mb-4">
-          Estas informacoes aparecem no aplicativo, nas telas Localizacao e Sobre a Igreja.
+          Estas informações aparecem no aplicativo, nas telas Localização e Sobre a Igreja.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -151,7 +151,7 @@ export default function DadosIgreja() {
           </div>
 
           <div className="md:col-span-2">
-            <label className={rotulo}>Endereco (rua e numero)</label>
+            <label className={rotulo}>Endereço (rua e número)</label>
             <input className={entrada} value={igreja.address_line || ""} onChange={(e) => campo("address_line", e.target.value)} />
           </div>
           <div>
@@ -216,16 +216,16 @@ export default function DadosIgreja() {
 
       <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="font-semibold text-white">Horarios dos cultos</h2>
+          <h2 className="font-semibold text-white">Horários dos cultos</h2>
           <button
             onClick={() => setMostrarForm((v) => !v)}
             className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs flex items-center gap-1"
           >
-            <Plus size={14} /> Novo horario
+            <Plus size={14} /> Novo horário
           </button>
         </div>
         <p className="text-xs text-slate-400 mb-4">
-          Horarios fixos que aparecem no aplicativo. Para um culto com data marcada, use a tela Cultos.
+          Horários fixos que aparecem no aplicativo. Para um culto com data marcada, use a tela Cultos.
         </p>
 
         {mostrarForm && (
@@ -236,7 +236,7 @@ export default function DadosIgreja() {
                 className={entrada}
                 value={novoCulto.name}
                 onChange={(e) => setNovoCulto({ ...novoCulto, name: e.target.value })}
-                placeholder="Culto da Familia"
+                placeholder="Culto da Família"
               />
             </div>
             <div>
@@ -252,7 +252,7 @@ export default function DadosIgreja() {
               </select>
             </div>
             <div>
-              <label className={rotulo}>Horario</label>
+              <label className={rotulo}>Horário</label>
               <input
                 type="time"
                 className={entrada}
@@ -269,7 +269,7 @@ export default function DadosIgreja() {
               />
             </div>
             <div>
-              <label className={rotulo}>Duracao (min)</label>
+              <label className={rotulo}>Duração (min)</label>
               <input
                 type="number"
                 className={entrada}
@@ -286,7 +286,7 @@ export default function DadosIgreja() {
         )}
 
         {!cultos.length ? (
-          <p className="text-sm text-slate-400">Nenhum horario cadastrado.</p>
+          <p className="text-sm text-slate-400">Nenhum horário cadastrado.</p>
         ) : (
           <div className="space-y-2">
             {cultos.map((culto) => (

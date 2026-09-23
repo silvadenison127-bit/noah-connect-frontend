@@ -24,15 +24,15 @@ const ZERO_SPARK = [0, 0, 0, 0, 0, 0, 0];
 const KPIS = [
   { icone: Users, label: "Membros Ativos", valor: "0", variacao: "0%", cor: "violet", sparkline: ZERO_SPARK },
   { icone: UserPlus, label: "Novos Membros", valor: "0", variacao: "0%", cor: "emerald", sparkline: ZERO_SPARK },
-  { icone: ClipboardCheck, label: "Frequencia Media", valor: "0%", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
-  { icone: Wallet, label: "Dizimos e Ofertas", valor: "R$ 0,00", variacao: "0%", cor: "emerald", sparkline: ZERO_SPARK },
+  { icone: ClipboardCheck, label: "Frequência Média", valor: "0%", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
+  { icone: Wallet, label: "Dízimos e Ofertas", valor: "R$ 0,00", variacao: "0%", cor: "emerald", sparkline: ZERO_SPARK },
   { icone: CalendarDays, label: "Eventos", valor: "0", variacao: "0%", cor: "amber", sparkline: ZERO_SPARK },
-  { icone: HeartHandshake, label: "Ministerios", valor: "0", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
-  { icone: Users2, label: "Celulas", valor: "0", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
+  { icone: HeartHandshake, label: "Ministérios", valor: "0", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
+  { icone: Users2, label: "Células", valor: "0", variacao: "0%", cor: "cyan", sparkline: ZERO_SPARK },
   { icone: BookOpen, label: "Discipulado", valor: "0%", variacao: "0%", cor: "violet", sparkline: ZERO_SPARK },
   { icone: Megaphone, label: "Evangelismo", valor: "0", variacao: "0%", cor: "amber", sparkline: ZERO_SPARK },
   { icone: Droplet, label: "Batismos", valor: "0", variacao: "0%", cor: "emerald", sparkline: ZERO_SPARK },
-  { icone: Anchor, label: "Retencao", valor: "0%", variacao: "0%", cor: "amber", sparkline: ZERO_SPARK },
+  { icone: Anchor, label: "Retenção", valor: "0%", variacao: "0%", cor: "amber", sparkline: ZERO_SPARK },
   { icone: GraduationCap, label: "Cursos", valor: "0", variacao: "0%", cor: "violet", sparkline: ZERO_SPARK },
   { icone: Sparkles, label: "IA Insights", valor: "0", variacao: "0%", cor: "violet", sparkline: ZERO_SPARK },
 ];
@@ -55,15 +55,15 @@ const RETENCAO_MOCK = [
 const CORES_RETENCAO = ["#8B5CF6", "rgba(255,255,255,0.08)"];
 
 const BOTOES_HERO = [
-  { label: "Periodo", icone: CalendarDays },
+  { label: "Período", icone: CalendarDays },
   { label: "Campus", icone: MapPin },
   { label: "Exportar", icone: Download },
   { label: "Atualizar", icone: RefreshCw },
 ];
 
 const BADGES_STATUS = [
-  { icone: Circle, cor: "text-emerald-400", texto: "Banco: Aguardando conexao" },
-  { icone: RefreshCw, cor: "text-slate-400", texto: "Ultima atualizacao: Sem sincronizacao" },
+  { icone: Circle, cor: "text-emerald-400", texto: "Banco: Aguardando conexão" },
+  { icone: RefreshCw, cor: "text-slate-400", texto: "Última atualização: Sem sincronização" },
   { icone: BarChart3, cor: "text-violet-400", texto: "Registros processados: 0" },
 ];
 
@@ -84,7 +84,7 @@ export default function ExecutiveBI() {
                 <span className="text-[11px] font-medium text-violet-300">Business Intelligence Executivo</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5 max-w-2xl">
-                Transforme dados em decisoes estrategicas. Uma visao 360° da igreja baseada em indicadores.
+                Transforme dados em decisões estratégicas. Uma visão 360° da igreja baseada em indicadores.
               </p>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function ExecutiveBI() {
       <div className="text-center pt-1 space-y-0.5">
         <p className="text-[10px] text-slate-500 font-medium">Fonte dos dados</p>
         <p className="text-[10px] text-slate-600">
-          Membros • Financeiro • Eventos • Celulas • Ministerios • Cursos • Agenda • IA Noah
+          Membros • Financeiro • Eventos • Células • Ministérios • Cursos • Agenda • IA Noah
         </p>
       </div>
     </div>

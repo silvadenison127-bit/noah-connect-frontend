@@ -37,7 +37,7 @@ function BolhaMensagem({ autor, texto }) {
 export default function IANoah() {
   const [status, setStatus] = useState(null);
   const [mensagens, setMensagens] = useState([
-    { autor: "ia", texto: "Ola! Sou a IA Noah. Pergunte algo sobre os dados da igreja - membros, celulas, dizimos, cultos e pedidos de oracao." },
+    { autor: "ia", texto: "Olá! Sou a IA Noah. Pergunte algo sobre os dados da igreja - membros, células, dízimos, cultos e pedidos de oração." },
   ]);
   const [pergunta, setPergunta] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -69,7 +69,7 @@ export default function IANoah() {
     } catch (err) {
       setMensagens((prev) => [
         ...prev,
-        { autor: "ia", texto: "Nao consegui processar sua pergunta agora. Tente novamente em instantes." },
+        { autor: "ia", texto: "Não consegui processar sua pergunta agora. Tente novamente em instantes." },
       ]);
     } finally {
       setEnviando(false);
@@ -94,7 +94,7 @@ export default function IANoah() {
         {status?.modo === "demonstracao" && (
           <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium px-3 py-1.5 rounded-full">
             <AlertCircle size={13} />
-            Modo Demonstracao
+            Modo Demonstração
           </div>
         )}
       </div>
@@ -159,10 +159,10 @@ export default function IANoah() {
           <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-4">
             <h3 className="text-sm font-semibold text-white mb-2">Sobre a IA Noah</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              As respostas sao geradas com base nos dados reais da plataforma
+              As respostas são geradas com base nos dados reais da plataforma
               {status?.modo === "demonstracao"
-                ? ". No momento, o modulo esta em modo demonstracao ate a configuracao da chave de IA."
-                : ", usando inteligencia artificial."}
+                ? ". No momento, o módulo está em modo demonstração até a configuração da chave de IA."
+                : ", usando inteligência artificial."}
             </p>
           </div>
         </div>

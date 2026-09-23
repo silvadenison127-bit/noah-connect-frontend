@@ -63,7 +63,7 @@ export default function AoVivo() {
       const { data } = await api.get(ROTA);
       setTransmissoes(Array.isArray(data) ? data : []);
     } catch (err) {
-      setErro(mensagemDeErro(err, "Nao foi possivel carregar as transmissoes."));
+      setErro(mensagemDeErro(err, "Não foi possível carregar as transmissões."));
     } finally {
       setCarregando(false);
     }
@@ -92,11 +92,11 @@ export default function AoVivo() {
 
   async function criar() {
     if (!form.titulo.trim()) {
-      setErroForm("Informe o titulo da transmissao.");
+      setErroForm("Informe o título da transmissão.");
       return;
     }
     if (!form.link.trim()) {
-      setErroForm("Cole o link da transmissao.");
+      setErroForm("Cole o link da transmissão.");
       return;
     }
 
@@ -106,10 +106,10 @@ export default function AoVivo() {
       await api.post(ROTA, form);
       setForm(FORM_VAZIO);
       setMostrarForm(false);
-      avisar("Transmissao cadastrada.");
+      avisar("Transmissão cadastrada.");
       await carregar();
     } catch (err) {
-      setErroForm(mensagemDeErro(err, "Nao foi possivel cadastrar."));
+      setErroForm(mensagemDeErro(err, "Não foi possível cadastrar."));
     } finally {
       setSalvando(false);
     }
@@ -130,7 +130,7 @@ export default function AoVivo() {
       avisar(textoSucesso);
       await carregar();
     } catch (err) {
-      setErro(mensagemDeErro(err, "A acao nao pode ser concluida."));
+      setErro(mensagemDeErro(err, "A ação não pode ser concluída."));
     } finally {
       setAcaoEmAndamento(null);
     }
@@ -138,17 +138,17 @@ export default function AoVivo() {
 
   async function remover(id, titulo) {
     const confirmado = window.confirm(
-      `Excluir a transmissao "${titulo}"? Esta acao nao pode ser desfeita.`,
+      `Excluir a transmissão "${titulo}"? Esta ação não pode ser desfeita.`,
     );
     if (!confirmado) return;
 
     setAcaoEmAndamento(id);
     try {
       await api.delete(`${ROTA}/${id}`);
-      avisar("Transmissao excluida.");
+      avisar("Transmissão excluída.");
       await carregar();
     } catch (err) {
-      setErro(mensagemDeErro(err, "Nao foi possivel excluir."));
+      setErro(mensagemDeErro(err, "Não foi possível excluir."));
     } finally {
       setAcaoEmAndamento(null);
     }
@@ -186,18 +186,18 @@ export default function AoVivo() {
           <p className="text-xs text-slate-400 mt-0.5">
             {transmitindo
               ? noAr[0].title
-              : "Os membros nao veem transmissao no aplicativo neste momento."}
+              : "Os membros não veem transmissão no aplicativo neste momento."}
           </p>
         </div>
 
         {transmitindo && (
           <button
             type="button"
-            onClick={() => executarAcao(noAr[0].id, "encerrar", "Transmissao encerrada.")}
+            onClick={() => executarAcao(noAr[0].id, "encerrar", "Transmissão encerrada.")}
             disabled={acaoEmAndamento === noAr[0].id}
             className="text-xs font-semibold px-4 py-2.5 rounded-lg bg-rose-600/90 text-white hover:bg-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {acaoEmAndamento === noAr[0].id ? "Encerrando..." : "Encerrar transmissao"}
+            {acaoEmAndamento === noAr[0].id ? "Encerrando..." : "Encerrar transmissão"}
           </button>
         )}
       </div>
@@ -216,7 +216,7 @@ export default function AoVivo() {
 
       <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <h2 className="font-semibold text-white">Transmissoes</h2>
+          <h2 className="font-semibold text-white">Transmissões</h2>
           <div className="flex items-center gap-4">
             <span className="text-xs text-slate-400">
               {transmissoes.length} cadastradas
@@ -229,7 +229,7 @@ export default function AoVivo() {
               }}
               className="text-xs font-semibold px-3 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:opacity-90 transition-opacity"
             >
-              {mostrarForm ? "Cancelar" : "Nova transmissao"}
+              {mostrarForm ? "Cancelar" : "Nova transmissão"}
             </button>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function AoVivo() {
           <div className="p-5 border-b border-white/10 bg-violet-500/[0.04] space-y-3">
             <div className="grid gap-3 md:grid-cols-2">
               <label className="block">
-                <span className="text-xs text-slate-400">Titulo *</span>
+                <span className="text-xs text-slate-400">Título *</span>
                 <input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -264,7 +264,7 @@ export default function AoVivo() {
               <span className="text-xs text-slate-400">
                 {form.provider === "youtube"
                   ? "Link do YouTube *"
-                  : "Endereco da transmissao *"}
+                  : "Endereço da transmissão *"}
               </span>
               <input
                 value={form.link}
@@ -278,7 +278,7 @@ export default function AoVivo() {
               />
               {form.provider === "youtube" && (
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Cole o endereco que aparece na barra do navegador. Qualquer
+                  Cole o endereço que aparece na barra do navegador. Qualquer
                   formato do YouTube funciona.
                 </span>
               )}
@@ -286,7 +286,7 @@ export default function AoVivo() {
 
             <div className="grid gap-3 md:grid-cols-2">
               <label className="block">
-                <span className="text-xs text-slate-400">Descricao</span>
+                <span className="text-xs text-slate-400">Descrição</span>
                 <input
                   value={form.descricao}
                   onChange={(e) => setForm({ ...form, descricao: e.target.value })}
@@ -316,19 +316,19 @@ export default function AoVivo() {
               disabled={salvando}
               className="text-xs font-semibold px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {salvando ? "Salvando..." : "Cadastrar transmissao"}
+              {salvando ? "Salvando..." : "Cadastrar transmissão"}
             </button>
           </div>
         )}
 
         <div className="p-5 space-y-6">
           {carregando && (
-            <p className="text-xs text-slate-500">Carregando transmissoes...</p>
+            <p className="text-xs text-slate-500">Carregando transmissões...</p>
           )}
 
           {!carregando && transmissoes.length === 0 && (
             <p className="text-xs text-slate-500">
-              Nenhuma transmissao cadastrada. Crie uma para poder coloca-la no ar
+              Nenhuma transmissão cadastrada. Crie uma para poder colocá-la no ar
               durante o culto.
             </p>
           )}
@@ -348,14 +348,14 @@ export default function AoVivo() {
                     <p className="text-xs text-slate-500 mt-0.5">
                       {item.scheduled_for
                         ? `Agendada para ${formatarData(item.scheduled_for)}`
-                        : "Sem horario definido"}
+                        : "Sem horário definido"}
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() =>
-                      executarAcao(item.id, "iniciar", "Transmissao no ar.")
+                      executarAcao(item.id, "iniciar", "Transmissão no ar.")
                     }
                     disabled={acaoEmAndamento === item.id}
                     className="text-xs font-semibold px-4 py-2.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -407,7 +407,7 @@ export default function AoVivo() {
                   <button
                     type="button"
                     onClick={() =>
-                      executarAcao(item.id, "encerrar", "Transmissao encerrada.")
+                      executarAcao(item.id, "encerrar", "Transmissão encerrada.")
                     }
                     disabled={acaoEmAndamento === item.id}
                     className="text-xs font-semibold px-4 py-2.5 rounded-lg bg-rose-600/90 text-white hover:bg-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -439,7 +439,7 @@ export default function AoVivo() {
                   <button
                     type="button"
                     onClick={() =>
-                      executarAcao(item.id, "reagendar", "Transmissao devolvida para a fila.")
+                      executarAcao(item.id, "reagendar", "Transmissão devolvida para a fila.")
                     }
                     disabled={acaoEmAndamento === item.id}
                     className="text-xs text-slate-500 hover:text-violet-400 transition-colors disabled:opacity-50"

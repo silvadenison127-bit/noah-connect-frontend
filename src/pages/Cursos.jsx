@@ -17,9 +17,9 @@ import {
 const ABAS = [
   { id: "dashboard", nome: "Dashboard" },
   { id: "turmas", nome: "Turmas" },
-  { id: "inscricoes", nome: "Inscricoes" },
-  { id: "presenca", nome: "Lista de Presenca" },
-  { id: "relatorios", nome: "Relatorios" },
+  { id: "inscricoes", nome: "Inscrições" },
+  { id: "presenca", nome: "Lista de Presença" },
+  { id: "relatorios", nome: "Relatórios" },
 ];
 
 const STATUS_LABEL = {
@@ -33,7 +33,7 @@ const STATUS_INSCRICAO_LABEL = {
   inscrito: { texto: "Inscrito", cor: "bg-blue-500/10 text-blue-400" },
   confirmado: { texto: "Confirmado", cor: "bg-emerald-500/10 text-emerald-400" },
   cancelado: { texto: "Cancelado", cor: "bg-rose-500/10 text-rose-400" },
-  concluido: { texto: "Concluido", cor: "bg-violet-500/10 text-violet-400" },
+  concluido: { texto: "Concluído", cor: "bg-violet-500/10 text-violet-400" },
 };
 
 const STATUS_PRESENCA_OPCOES = [
@@ -248,7 +248,7 @@ export default function Cursos() {
   }
 
   async function removerTurma(id) {
-    if (!window.confirm("Remover esta turma? Todas as inscricoes vinculadas tambem serao removidas.")) return;
+    if (!window.confirm("Remover esta turma? Todas as inscrições vinculadas também serão removidas.")) return;
     try {
       await api.delete(`/turmas/${id}`);
       carregarTurmas();
@@ -312,19 +312,19 @@ export default function Cursos() {
       setEditandoInscricaoId(null);
       carregarInscricoes();
     } catch (err) {
-      alert(err.response?.data?.erro || "Erro ao salvar inscricao");
+      alert(err.response?.data?.erro || "Erro ao salvar inscrição");
     } finally {
       setSalvandoInscricao(false);
     }
   }
 
   async function removerInscricao(id) {
-    if (!window.confirm("Remover esta inscricao?")) return;
+    if (!window.confirm("Remover esta inscrição?")) return;
     try {
       await api.delete(`/inscricoes-cursos/${id}`);
       carregarInscricoes();
     } catch (err) {
-      alert("Erro ao remover inscricao");
+      alert("Erro ao remover inscrição");
     }
   }
 
@@ -362,10 +362,10 @@ export default function Cursos() {
     try {
       const registros = listaPresenca.map((a) => ({ inscricao_id: a.inscricao_id, status: a.status }));
       await api.post("/presencas-cursos/lote", { data_aula: dataAula, registros });
-      alert("Presenca salva com sucesso!");
+      alert("Presença salva com sucesso!");
       carregarListaPresenca();
     } catch (err) {
-      alert(err.response?.data?.erro || "Erro ao salvar presenca");
+      alert(err.response?.data?.erro || "Erro ao salvar presença");
     } finally {
       setSalvandoPresenca(false);
     }
@@ -376,7 +376,7 @@ export default function Cursos() {
       const { data } = await api.get(`/presencas-cursos/frequencia/${inscricaoId}`);
       setFrequenciaVisivel({ nome, ...data });
     } catch (err) {
-      alert("Erro ao buscar frequencia");
+      alert("Erro ao buscar frequência");
     }
   }
 
@@ -416,11 +416,11 @@ export default function Cursos() {
     }
     return [
       { header: "Nome", key: "nome_completo" },
-      { header: "Presencas", key: "presencas" },
+      { header: "Presenças", key: "presencas" },
       { header: "Faltas", key: "faltas" },
       { header: "Atrasos", key: "atrasos" },
       { header: "Justificadas", key: "justificadas" },
-      { header: "Frequencia", key: "percentual_frequencia" },
+      { header: "Frequência", key: "percentual_frequencia" },
     ];
   }
 
@@ -428,7 +428,7 @@ export default function Cursos() {
     if (relatorioDados.length === 0) return;
     const colunas = colunasRelatorio();
     const doc = new jsPDF();
-    const titulo = relatorioTipo === "alunos" ? "Lista de Alunos" : "Relatorio de Frequencia";
+    const titulo = relatorioTipo === "alunos" ? "Lista de Alunos" : "Relatório de Frequência";
 
     doc.setFontSize(14);
     doc.text(titulo, 14, 15);
@@ -482,7 +482,7 @@ export default function Cursos() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="font-semibold text-white text-lg">Cursos</h2>
-          <p className="text-sm text-slate-500">Gerencie todos os cursos da igreja em um unico lugar.</p>
+          <p className="text-sm text-slate-500">Gerencie todos os cursos da igreja em um único lugar.</p>
         </div>
         <div className="flex items-center gap-2">
           {ehAdmin && abaAtiva === "dashboard" && (
@@ -506,7 +506,7 @@ export default function Cursos() {
               onClick={abrirNovaInscricao}
               className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white text-sm font-medium rounded-xl px-4 py-2"
             >
-              <Plus size={16} /> Nova Inscricao
+              <Plus size={16} /> Nova Inscrição
             </button>
           )}
         </div>
@@ -534,7 +534,7 @@ export default function Cursos() {
             className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
           />
           <textarea
-            placeholder="Descricao (opcional)"
+            placeholder="Descrição (opcional)"
             value={novoCurso.descricao}
             onChange={(e) => setNovoCurso({ ...novoCurso, descricao: e.target.value })}
             rows={2}
@@ -577,7 +577,7 @@ export default function Cursos() {
       {abaAtiva === "dashboard" && (
         <div className="space-y-4">
           <div>
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Acesso Rapido</h3>
+            <h3 className="text-sm font-semibold text-slate-300 mb-3">Acesso Rápido</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {cursos.map((c) => {
                 const Icone = ICONE_CURSO_PADRAO[c.nome] || GraduationCap;
@@ -611,15 +611,15 @@ export default function Cursos() {
             <CardEstatistica icone={GraduationCap} label="Total de Cursos" valor={dashboardStats?.total_cursos ?? 0} carregando={carregandoDashboard} />
             <CardEstatistica icone={Users} label="Turmas Ativas" valor={dashboardStats?.turmas_ativas ?? 0} carregando={carregandoDashboard} />
             <CardEstatistica icone={UserCheck} label="Alunos Matriculados" valor={dashboardStats?.alunos_matriculados ?? 0} carregando={carregandoDashboard} />
-            <CardEstatistica icone={Clock} label="Inscricoes Pendentes" valor={dashboardStats?.inscricoes_pendentes ?? 0} carregando={carregandoDashboard} />
-            <CardEstatistica icone={BarChart3} label="Frequencia Media" valor={`${dashboardStats?.frequencia_media ?? 0}%`} carregando={carregandoDashboard} />
+            <CardEstatistica icone={Clock} label="Inscrições Pendentes" valor={dashboardStats?.inscricoes_pendentes ?? 0} carregando={carregandoDashboard} />
+            <CardEstatistica icone={BarChart3} label="Frequência Média" valor={`${dashboardStats?.frequencia_media ?? 0}%`} carregando={carregandoDashboard} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5 lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-white">Inscricoes por Mes</h3>
-                <span className="text-[10px] text-slate-500">Ultimos 6 meses</span>
+                <h3 className="font-semibold text-white">Inscrições por Mês</h3>
+                <span className="text-[10px] text-slate-500">Últimos 6 meses</span>
               </div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
@@ -642,7 +642,7 @@ export default function Cursos() {
 
             <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-white">Proximas Aulas</h3>
+                <h3 className="font-semibold text-white">Próximas Aulas</h3>
                 <Calendar size={16} className="text-slate-500" />
               </div>
               {carregandoDashboard ? (
@@ -748,7 +748,7 @@ export default function Cursos() {
                 className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
               />
               <input
-                placeholder="Horario (ex: 19h30)"
+                placeholder="Horário (ex: 19h30)"
                 value={novaTurma.horario}
                 onChange={(e) => setNovaTurma({ ...novaTurma, horario: e.target.value })}
                 className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
@@ -863,7 +863,7 @@ export default function Cursos() {
               <option value="inscrito" className="bg-[#0F0F1E]">Inscrito</option>
               <option value="confirmado" className="bg-[#0F0F1E]">Confirmado</option>
               <option value="cancelado" className="bg-[#0F0F1E]">Cancelado</option>
-              <option value="concluido" className="bg-[#0F0F1E]">Concluido</option>
+              <option value="concluido" className="bg-[#0F0F1E]">Concluído</option>
             </select>
           </div>
 
@@ -914,10 +914,10 @@ export default function Cursos() {
                 <option value="inscrito" className="bg-[#0F0F1E]">Inscrito</option>
                 <option value="confirmado" className="bg-[#0F0F1E]">Confirmado</option>
                 <option value="cancelado" className="bg-[#0F0F1E]">Cancelado</option>
-                <option value="concluido" className="bg-[#0F0F1E]">Concluido</option>
+                <option value="concluido" className="bg-[#0F0F1E]">Concluído</option>
               </select>
               <textarea
-                placeholder="Observacoes (opcional)"
+                placeholder="Observações (opcional)"
                 value={novaInscricao.observacoes}
                 onChange={(e) => setNovaInscricao({ ...novaInscricao, observacoes: e.target.value })}
                 rows={2}
@@ -928,7 +928,7 @@ export default function Cursos() {
                   disabled={salvandoInscricao}
                   className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl py-2"
                 >
-                  {salvandoInscricao ? "Salvando..." : editandoInscricaoId ? "Atualizar Inscricao" : "Salvar Inscricao"}
+                  {salvandoInscricao ? "Salvando..." : editandoInscricaoId ? "Atualizar Inscrição" : "Salvar Inscrição"}
                 </button>
                 <button
                   type="button"
@@ -945,7 +945,7 @@ export default function Cursos() {
             {carregandoInscricoes ? (
               <p className="text-sm text-slate-500 p-5">Carregando...</p>
             ) : inscricoes.length === 0 ? (
-              <p className="text-sm text-slate-500 p-5">Nenhuma inscricao encontrada.</p>
+              <p className="text-sm text-slate-500 p-5">Nenhuma inscrição encontrada.</p>
             ) : (
               inscricoes.map((i) => {
                 const statusInfo = STATUS_INSCRICAO_LABEL[i.status] || STATUS_INSCRICAO_LABEL.inscrito;
@@ -1021,7 +1021,7 @@ export default function Cursos() {
                 disabled={salvandoPresenca}
                 className="bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-60 text-white text-sm font-medium rounded-xl px-4 py-2"
               >
-                {salvandoPresenca ? "Salvando..." : "Salvar Presenca"}
+                {salvandoPresenca ? "Salvando..." : "Salvar Presença"}
               </button>
             )}
           </div>
@@ -1077,7 +1077,7 @@ export default function Cursos() {
                     })}
                     <button
                       onClick={() => verFrequencia(aluno.inscricao_id, aluno.nome_completo)}
-                      title="Ver frequencia"
+                      title="Ver frequência"
                       className="p-2 rounded-lg text-xs bg-white/5 text-slate-400 hover:bg-white/10"
                     >
                       <BarChart3 size={14} />
@@ -1091,10 +1091,10 @@ export default function Cursos() {
           {frequenciaVisivel && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50" onClick={() => setFrequenciaVisivel(null)}>
               <div className="bg-[#0F0F1E] border border-white/10 rounded-2xl shadow-xl w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
-                <h3 className="font-semibold text-white mb-4">Frequencia de {frequenciaVisivel.nome}</h3>
+                <h3 className="font-semibold text-white mb-4">Frequência de {frequenciaVisivel.nome}</h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-slate-500">Presencas</p>
+                    <p className="text-xs text-slate-500">Presenças</p>
                     <p className="text-lg font-semibold text-emerald-400">{frequenciaVisivel.presencas}</p>
                   </div>
                   <div className="bg-white/5 rounded-xl p-3">
@@ -1111,7 +1111,7 @@ export default function Cursos() {
                   </div>
                 </div>
                 <div className="bg-violet-500/10 rounded-xl p-3 text-center mb-4">
-                  <p className="text-xs text-slate-400">Percentual de Frequencia</p>
+                  <p className="text-xs text-slate-400">Percentual de Frequência</p>
                   <p className="text-2xl font-bold text-violet-400">{frequenciaVisivel.percentual_frequencia}%</p>
                 </div>
                 <button
@@ -1143,14 +1143,14 @@ export default function Cursos() {
               </select>
             </div>
             <div className="min-w-[200px]">
-              <label className="text-xs text-slate-400 mb-1 block">Tipo de relatorio</label>
+              <label className="text-xs text-slate-400 mb-1 block">Tipo de relatório</label>
               <select
                 value={relatorioTipo}
                 onChange={(e) => setRelatorioTipo(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/50"
               >
                 <option value="alunos" className="bg-[#0F0F1E]">Lista de Alunos</option>
-                <option value="frequencia" className="bg-[#0F0F1E]">Frequencia por Turma</option>
+                <option value="frequencia" className="bg-[#0F0F1E]">Frequência por Turma</option>
               </select>
             </div>
             {relatorioDados.length > 0 && (
@@ -1173,7 +1173,7 @@ export default function Cursos() {
 
           <div className="bg-[#0F0F1E] rounded-2xl border border-white/10 shadow-sm overflow-x-auto">
             {!relatorioTurmaId ? (
-              <p className="text-sm text-slate-500 p-5">Selecione uma turma para gerar o relatorio.</p>
+              <p className="text-sm text-slate-500 p-5">Selecione uma turma para gerar o relatório.</p>
             ) : carregandoRelatorio ? (
               <p className="text-sm text-slate-500 p-5">Carregando...</p>
             ) : relatorioDados.length === 0 ? (
