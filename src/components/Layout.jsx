@@ -9,6 +9,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import GlobalSearch from "./GlobalSearch";
+import PanicAlerts from "./PanicAlerts";
 
 const GRUPOS_MENU = [
   {
@@ -385,6 +386,7 @@ export default function Layout({ titulo = "Dashboard" }) {
         )}
 
         <main className="p-6 space-y-6 overflow-y-auto">
+          <PanicAlerts />
           <Outlet />
         </main>
       </div>
