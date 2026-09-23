@@ -4,10 +4,10 @@ import { obterStatusIA, perguntarIA } from "../services/iaNoahService";
 
 const PERGUNTAS_SUGERIDAS = [
   "Quantos membros ativos temos hoje?",
-  "Quantas celulas estao cadastradas?",
-  "Qual o total de dizimos deste mes?",
-  "Quantos pedidos de oracao estao ativos?",
-  "Quantos cultos estao agendados?",
+  "Quantas células estão cadastradas?",
+  "Qual o total de dízimos deste mês?",
+  "Quantos pedidos de oração estão ativos?",
+  "Quantos cultos estão agendados?",
 ];
 
 function BolhaMensagem({ autor, texto }) {
