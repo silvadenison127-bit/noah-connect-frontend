@@ -24,6 +24,8 @@ import ExecutiveBI from "./pages/ExecutiveBI";
 import MapaIgreja from "./pages/MapaIgreja";
 import AoVivo from "./pages/AoVivo";
 import Chat from "./pages/Chat";
+import Visitante from "./pages/Visitante";
+import Visitantes from "./pages/Visitantes";
 
 export default function App() {
   return (
@@ -33,6 +35,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           {/* Publica: quem chega aqui vem do link do e-mail, sem sessao do painel. */}
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+          <Route path="/visitante" element={<Visitante />} />
           <Route
             element={
               <RotaProtegida>
@@ -60,6 +63,7 @@ export default function App() {
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="/cursos" element={<Cursos />} />
+            <Route path="/visitantes" element={<Visitantes />} />
           </Route>
         </Routes>
       </BrowserRouter>
