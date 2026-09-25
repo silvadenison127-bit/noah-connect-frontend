@@ -25,6 +25,7 @@ import MapaIgreja from "./pages/MapaIgreja";
 import AoVivo from "./pages/AoVivo";
 import Chat from "./pages/Chat";
 import Visitante from "./pages/Visitante";
+import Privacidade from "./pages/Privacidade";
 import Visitantes from "./pages/Visitantes";
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
           {/* Publica: quem chega aqui vem do link do e-mail, sem sessao do painel. */}
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/visitante" element={<Visitante />} />
+          <Route path="/privacidade" element={<Privacidade />} />
           <Route
             element={
               <RotaProtegida>
