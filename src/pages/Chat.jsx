@@ -171,6 +171,23 @@ export default function Chat() {
     }
   }
 
+  async function excluirConversa() {
+    if (!selecionada || selecionada.status !== "closed" || excluindo) return;
+    if (!window.confirm("Excluir esta conversa do painel? Ela sair\u00e1 da lista de encerradas. O membro continuar\u00e1 vendo o hist\u00f3rico no aplicativo.")) return;
+    setExcluindo(true);
+    try {
+      await api.post(ROTA + "/" + selecionada.id + "/ocultar");
+      cancelarSelecao();
+      setSelecionada(null);
+      setMensagens([]);
+      carregarConversas(filtro);
+    } catch (err) {
+      alert(mensagemDeErro(err, "Erro ao excluir conversa"));
+    } finally {
+      setExcluindo(false);
+    }
+  }
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -264,12 +281,21 @@ export default function Chat() {
                     <CheckCircle size={14} /> Encerrar
                   </button>
                 ) : (
-                  <button
-                    onClick={() => alterarStatus("open")}
-                    className="shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200"
-                  >
-                    <RotateCcw size={14} /> Reabrir
-                  </button>
+                  <>
+                    <button
+                      onClick={() => alterarStatus("open")}
+                      className="shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200"
+                    >
+                      <RotateCcw size={14} /> Reabrir
+                    </button>
+                    <button
+                      onClick={excluirConversa}
+                      disabled={excluindo}
+                      className="shrink-0 flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
+                    >
+                      <Trash2 size={14} /> {excluindo ? "Excluindo..." : "Excluir conversa"}
+                    </button>
+                  </>
                 )}
               </div>
 
